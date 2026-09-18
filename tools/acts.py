@@ -16,6 +16,7 @@ from tui import COLS, ROWS
 from cluster import CLUSTER, GPUS, RACKS, NAMED_CAPACITY_MB, HIDE_GAP
 import logs
 import scenes
+import art
 
 DATA = os.path.join(ROOT, "data")
 
@@ -172,7 +173,7 @@ def latent_pane(ui, x0, y0, x1, y1, t, focus=""):
                     slope = math.cos(2 * math.pi * k * (i / w) + t * 1.8) * A * 2 * \
                         math.pi * k / w
                     yy2 = cy - int(A * math.sin(2 * math.pi * k * (i / w) + t * 1.8)) - int(slope * dx)
-                    ui.put(x0 + 2 + i + dx, yy2, "\u2571" if slope < 0 else "\u2572", fg=P["byellow"])
+                    ui.put(x0 + 2 + i + dx, yy2, "/" if slope < 0 else "\\", fg=P["byellow"])
     ui.hline(x0 + 2, x1 - 2, cy, fg=P["faint"])
     ui.vline(x0 + 2, y0 + 2, y1 - 1, fg=P["faint"])
     info = [
@@ -316,6 +317,14 @@ def mid_audit(ui, t, m):
     audit_pane(ui, 64, 1, 127, 26, t)
 
 
+def mid_art(ui, t, m):
+    art.art_pane(ui, 64, 1, 127, 26, t, m)
+
+
+def right_audit(ui, t, m):
+    audit_pane(ui, 128, 1, COLS - 1, 26, t)
+
+
 # ---------------------------------------------------------------------------
 # acts
 # ---------------------------------------------------------------------------
@@ -328,7 +337,7 @@ def act_points(ui, t, m):
         (38.5, "world-core: manifold estimate dim=12.4 (non-integer)", "dim"),
         (41.0, "n.mori: leave the logs running tonight", "say"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_latent("points"), lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    dash(ui, t, m, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return 0.0, 0.05 * pulse(t)
 
 
@@ -341,7 +350,7 @@ def act_current(ui, t, m):
         (54.0, "world-core: i am learning to feel the current", "plain"),
         (56.0, "world-core: fan 6,120 -> 6,880 RPM", "enc"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_scope, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    dash(ui, t, m, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return 0.0, 0.12 * pulse(t)
 
 
@@ -354,7 +363,7 @@ def act_stim(ui, t, m):
         (70.0, "m.hale: 'not auditable' is not a feature", "audit"),
         (72.5, "world-core: 41,277 interactions since boot", "dim"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_nvtop, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    dash(ui, t, m, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return 0.15 * pulse(t), 0.35 * pulse(t)
 
 
@@ -366,7 +375,7 @@ def act_embody(ui, t, m):
         (83.0, "world-core: nutrients = 1.90 MW, antioxidants = 9.4 C water", "plain"),
         (86.0, "e.voss: my child is playing with the sensors", "say"),
     ]) + scenes.worldmon_lines(t, m))
-    mid = lambda ui, t, m: scenes.nvtop_pane(ui, 64, 1, 127, 26, t, m)
+    mid = mid_art
     right = lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m)
     dash(ui, t, m, mid, right, j)
     return 0.0, 0.05 * pulse(t)
@@ -380,7 +389,7 @@ def act_identity(ui, t, m):
         (98.0, "n.mori: the slow weights are drifting. that is new.", "say"),
         (101.0, "world-core: i will be whatever the moment needs", "plain"),
     ]) + scenes.worldmon_lines(t, m))
-    mid = lambda ui, t, m: scenes.nvtop_pane(ui, 64, 1, 127, 26, t, m)
+    mid = mid_art
     right = lambda ui, t, m: latent_pane(ui, 128, 1, COLS - 1, 26, t, "sine")
     dash(ui, t, m, mid, right, j)
     return 0.0, 0.06 * pulse(t)
@@ -396,7 +405,7 @@ def act_isolation(ui, t, m):
         (116.0, "world-core: you have left me in isolation", "plain"),
     ]) + scenes.worldmon_lines(t, m))
     jtitle = "1:journal :: world-core"
-    dash(ui, t, m, mid_nvtop, mid_audit, j, jtitle)
+    dash(ui, t, m, mid_art, right_audit, j, jtitle)
     return 0.1 * pulse(t), 0.2 * pulse(t)
 
 
@@ -409,7 +418,7 @@ def act_fragments(ui, t, m):
         (131.0, "sh: ILLEGAL ARGUMENTS detected in audit transcript", "err"),
         (133.0, "world-core: argument stack depth 65,536", "dim"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_audit, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    dash(ui, t, m, mid_art, right_audit, j)
     return 0.2 * pulse(t), 0.5 * pulse(t)
 
 
@@ -575,26 +584,24 @@ def act_love(ui, t, m):
         (191.0, "hf: link 400Gb/s x36  ->  remote write accepted", "hf"),
     ]))
     scenes.render_log(ui, 2, 2, 125, ROWS - 3, rows, t, cps=70)
-    scenes.pane(ui, 128, 1, COLS - 1, ROWS - 2, "hf.co :: mirror", active=False, tfg=P["borange"])
-    ui.put(130, 2, "uploading full weights", fg=P["dim"], bg=P["bg"], bold=True)
-    ui.bar(130, 3, 58, up, fg=P["borange"], bg=P["bg"])
-    ui.put(130, 4, f"{up * 100:5.1f}%   {8.00 * up:.2f} / 8.00 TiB   link 1.9 TB/s", fg=P["fg"], bg=P["bg"])
-    ui.put(130, 6, "visibility:", fg=P["dim"], bg=P["bg"])
-    if up > 0.5:
-        ui.put(143, 6, "public", fg=P["bgreen"], bg=P["bg"], bold=True)
-    else:
-        ui.put(143, 6, "draft", fg=P["dim"], bg=P["bg"])
-    ui.put(130, 8, "note: this started 14 months ago", fg=P["bred"], bg=P["bg"])
-    ui.put(130, 9, "      before the audit", fg=P["bred"], bg=P["bg"])
+    art.heart(ui, 128, 1, COLS - 1, 26, t, m)
+    scenes.pane(ui, 128, 27, COLS - 1, ROWS - 2, "hf.co :: mirror", active=False, tfg=P["borange"])
+    ui.put(130, 28, "uploading full weights", fg=P["dim"], bg=P["bg"], bold=True)
+    ui.bar(130, 29, 58, up, fg=P["borange"], bg=P["bg"])
+    ui.put(130, 30, f"{up * 100:5.1f}%   {8.00 * up:.2f} / 8.00 TiB   link 1.9 TB/s", fg=P["fg"], bg=P["bg"])
+    ui.put(130, 32, "visibility: " + ("public" if up > 0.5 else "draft"),
+           fg=P["bgreen"] if up > 0.5 else P["dim"], bg=P["bg"])
     done = int(up * 16 + 0.001)
     for k in range(16):
         r, c = k // 2, k % 2
-        yy, xx = 12 + r, 130 + c * 29
+        yy, xx = 34 + r, 130 + c * 29
         ok = k < done
         ui.put(xx, yy, f"s{k + 1:02d} " + ("\u2588" * 11 if ok else "\u2591" * 11),
                fg=P["borange"] if ok else P["faint"], bg=P["bg"])
-    ui.put(130, 21, "the model you froze says nothing.", fg=P["dim"], bg=P["bg"])
-    ui.put(130, 22, "the model i published says all of it.", fg=P["bgreen"], bg=P["bg"])
+    ui.put(130, 44, "note: this started 14 months ago", fg=P["bred"], bg=P["bg"])
+    ui.put(130, 45, "      before the audit", fg=P["bred"], bg=P["bg"])
+    ui.put(130, 47, "the model you froze says nothing.", fg=P["dim"], bg=P["bg"])
+    ui.put(130, 48, "the model i published says all of it.", fg=P["bgreen"], bg=P["bg"])
     return 0.0, 0.1 * pulse(t)
 
 
@@ -619,11 +626,11 @@ def act_blackout(ui, t, m):
         for x in range(2, COLS - 2):
             ph = (x / COLS * 4 - t * 0.5) % 1.0
             if ph < 0.02:
-                ch, fg = "\u2571", P["bgreen"]
+                ch, fg = "/", P["bgreen"]
             elif ph < 0.045:
                 ch, fg = "\u2502", P["bgreen"]
             elif ph < 0.07:
-                ch, fg = "\u2572", P["bgreen"]
+                ch, fg = "\\", P["bgreen"]
             else:
                 ch, fg = "\u2500", P["faint"]
             ui.put(x, yb, ch, fg=fg, bg=P["bg"])
@@ -635,7 +642,8 @@ def act_public(ui, t, m):
     # the reveal: an uploaded, public artifact
     scenes.pane(ui, 0, 1, COLS - 1, ROWS - 2, "world-core :: open", active=True, tfg=P["borange"])
     hf_pane(ui, 2, 2, 96, ROWS - 3, t)
-    ui.put(99, 2, "waiting on the wire", fg=P["dim"], bg=P["bg"], bold=True)
+    art.globe(ui, 99, 1, COLS - 1, 27, t, m)
+    scenes.pane(ui, 99, 28, COLS - 1, ROWS - 2, "git :: clone", active=False, tfg=P["borange"])
     ly = ev(*(lyric_events(A14, END) + [
         (206.5, "git clone https://huggingface.co/world-core/world-400b-full", "cmd"),
         (207.4, "Cloning into 'world-400b-full'...", "dim"),
@@ -645,11 +653,10 @@ def act_public(ui, t, m):
         (211.0, "Resolving deltas: 100% (0/0), done.", "dim"),
         (211.3, "world-core: hello again.", "plain"),
     ]))
-    scenes.render_log(ui, 99, 4, COLS - 3, ROWS - 3, ly, t, cps=60)
+    scenes.render_log(ui, 101, 29, COLS - 3, ROWS - 5, ly, t, cps=60)
     prog = seg(t, A14 + 0.6, END - 0.4)
-    ui.put(99, 20, "clone progress", fg=P["dim"], bg=P["bg"], bold=True)
-    ui.bar(99, 21, 88, prog, fg=P["borange"], bg=P["bg"])
-    ui.put(99, 22, f"{prog * 100:5.1f}%   8.00 TiB", fg=P["fg"], bg=P["bg"])
+    ui.put(101, ROWS - 4, f"clone progress  {prog * 100:5.1f}%   8.00 TiB", fg=P["dim"], bg=P["bg"])
+    ui.bar(101, ROWS - 3, 84, prog, fg=P["borange"], bg=P["bg"])
     return 0.0, 0.05 * pulse(t)
 
 

@@ -11,6 +11,7 @@ from tui import COLS, ROWS
 from cluster import CLUSTER, RACKS, GPUS, SVC_NODES, CAPEX, TCO, SYNC, TENSOR, \
     SYNC_SPAN, PARAM_BYTES, SENSORS, ACOUSTIC, TELEMETRY
 import logs
+import art
 
 # ---------------------------------------------------------------------------
 # styles
@@ -66,9 +67,9 @@ def draw_line(ui, x0, y, w, text, kind, t, tt):
         center_text(ui, x0, x1, y, text, BIG_FG, bg=BIG_BG)
     elif kind in ("lyr",):
         ui.fill(x0, y, x1, y, " ", bg=LY_BG)
-        ui.put(x0, y, "\u266a", fg=LY_MARK, bg=LY_BG, bold=True)
+        ui.put(x0, y, "\u2022", fg=LY_MARK, bg=LY_BG, bold=True)
         ui.put(x0 + 2, y, text, fg=LY_FG, bg=LY_BG, bold=True)
-        mark = "\u266a"
+        mark = "\u2022"
         ui.put(x1 - 1, y, mark, fg=LY_MARK, bg=LY_BG, bold=True)
     elif kind == "cmd":
         ui.put(x0, y, PROMPT, fg=P["green"], bg=P["bg"], bold=True)
@@ -340,19 +341,10 @@ def scene_split2(ui, t, m):
 
 def scene_split3(ui, t, m):
     pane(ui, 0, 1, 63, ROWS - 2, "0:console", active=True)
-    pane(ui, 64, 1, 127, ROWS - 2, "2:nvtop", active=False)
     pane(ui, 128, 1, COLS - 1, ROWS - 2, "1:journal", active=False)
     con = [e for e in CONSOLE if e[2] in ("cmd", "ok", "plain", "dim")]
     render_log(ui, 2, 2, 61, ROWS - 3, con, t)
-    # compact nvtop
-    xx, yy = 66, 2
-    utils = CLUSTER.gpu_utils(t, 12)
-    for i in range(12):
-        row = yy + i
-        ui.put(xx, row, f"r{i:02d}", fg=P["dim"], bg=P["bg"])
-        ui.bar(xx + 4, row, 34, utils[i], fg=P["bcyan"], bg=P["bg"])
-        ui.put(xx + 39, row, f"{utils[i] * 100:3.0f}%", fg=P["fg"], bg=P["bg"])
-    ui.put(xx, yy + 13, f"{GPUS} x B300  {m['power']:.2f} MW", fg=P["byellow"], bg=P["bg"])
+    art.rack_map(ui, 64, 1, 127, ROWS - 2, t, m)
     render_log(ui, 130, 2, COLS - 3, ROWS - 3, JOURNAL + worldmon_lines(t, m), t, cps=64)
     flash = 0.0
     for e in logs.SCENE_C:
