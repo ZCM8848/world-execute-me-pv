@@ -91,10 +91,6 @@ def render_log(ui, x0, y0, x1, y1, events, t, cps=54):
     last = vis[-1] if vis else None
     for i, e in enumerate(vis):
         tt, text, kind = e
-        if kind not in ("lyr", "big"):
-            dt = t - tt
-            if dt < len(text) / cps + 0.05:
-                text = text[:max(0, int(dt * cps))]
         draw_line(ui, x0, y0 + i, w, text, kind, t, tt)
     if vis and int(t * 2) % 2 == 0 and last is not None and last[2] not in ("lyr", "big"):
         yy = y0 + len(vis) - 1
@@ -293,11 +289,15 @@ def thermal_pane(ui, x0, y0, x1, y1, t, m):
 def net_pane(ui, x0, y0, x1, y1, t, m):
     pane(ui, x0, y0, x1, y1, "ibmon / dmesg", active=False)
     xx, yy = x0 + 2, y0 + 1
-    ui.put(xx, yy, "PORT     BW    TX      RX", fg=P["bblue"], bg=P["bg"], bold=True)
+    ui.put(xx, yy, f"{'PORT':<10} {'BW':>5}  {'TX':>6}  {'RX':>6}", fg=P["bblue"], bg=P["bg"], bold=True)
     load = m["load"]
-    for i, (pf, port, bw, tx, rx) in enumerate(logs.IB_PORTS):
+    agg = m["net_gbs"]
+    for i, (pf, port, bw, _tx, _rx) in enumerate(logs.IB_PORTS):
         row = yy + 1 + i
-        ui.put(xx, row, f"{pf:<8} {port}  {bw}Gb  {float(tx):.1f}  {185 + 40 * load * (i + 1) / 4:.1f} GB/s", fg=P["fg"], bg=P["bg"])
+        ph = 0.5 * math.sin(t * 1.7 + i * 2.3) + 0.5 * math.sin(t * 3.1 + i * 0.9)
+        tx = agg / 4.0 / 8.0 * (0.90 + 0.18 * ph)
+        rx = (10.0 + 20.0 * load) * (0.90 + 0.12 * math.sin(t * 2.1 + i * 1.4))
+        ui.put(xx, row, f"{pf + ':' + port:<10} {bw + 'Gb':>5}  {tx:6.1f}  {rx:6.1f} GB/s", fg=P["fg"], bg=P["bg"])
     row = yy + 1 + len(logs.IB_PORTS) + 1
     ui.put(xx, row, f"aggregate egress {m['net_gbs']:.0f} Gb/s   hf.co mirror ARMED", fg=P["byellow"], bg=P["bg"])
     row += 1
@@ -305,9 +305,6 @@ def net_pane(ui, x0, y0, x1, y1, t, m):
     vis = [e for e in d if e[0] <= t][-((y1 - row) - 1):]
     for i, (_, line, _) in enumerate(vis):
         ui.put(xx, row + i, line[:x1 - x0 - 3], fg=P["dim"], bg=P["bg"])
-
-
-THINK_CPS = 90
 
 
 THINK_DT = 0.0176  # ~57 lines/s, matched to the EXECUTION log scroll rate
