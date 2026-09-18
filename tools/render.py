@@ -3,6 +3,9 @@
     python tools/render.py --preview 1 4 11 20 28
     python tools/render.py --range 0 30 out/slice_boot_30s.mp4
     python tools/render.py --video out/world_full.mp4
+
+Add --gl for the OpenGL GPU pipeline (moderngl + NVENC, ~4x faster);
+the CPU multiprocessing path remains the default and the fallback.
 """
 import argparse
 import os
@@ -73,6 +76,36 @@ def render_frame(t, ctx):
     return ctx.post.compose(frame, t=t, gain=gain, bloom=0.42), m
 
 
+X264_ARGS = ["-c:v", "libx264", "-preset", "medium", "-crf", "16"]
+NVENC_ARGS = ["-c:v", "h264_nvenc", "-preset", "p6", "-tune", "hq",
+              "-rc", "vbr", "-cq", "19", "-b:v", "0",
+              "-spatial-aq", "1", "-temporal-aq", "1"]
+
+_NVENC_OK = None
+
+
+def probe_nvenc():
+    global _NVENC_OK
+    if _NVENC_OK is None:
+        try:
+            r = subprocess.run(
+                ["ffmpeg", "-hide_banner", "-loglevel", "error", "-f", "lavfi",
+                 "-i", "color=c=black:s=64x64:d=0.1", "-c:v", "h264_nvenc",
+                 "-f", "null", "-"],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=20)
+            _NVENC_OK = (r.returncode == 0)
+        except Exception:
+            _NVENC_OK = False
+        print(f"encoder: {'h264_nvenc (GPU)' if _NVENC_OK else 'libx264 (CPU)'}", flush=True)
+    return _NVENC_OK
+
+
+def encoder_args(pref="auto"):
+    if pref == "nvenc" or (pref == "auto" and probe_nvenc()):
+        return list(NVENC_ARGS)
+    return list(X264_ARGS)
+
+
 def preview(ctx, times):
     os.makedirs(os.path.join(ROOT, "out"), exist_ok=True)
     for t in times:
@@ -83,7 +116,7 @@ def preview(ctx, times):
         print(f"t={t:6.2f}s  {time.time() - t0:5.2f}s  {path}")
 
 
-def encode(ctx, t0, t1, out_path):
+def encode(ctx, t0, t1, out_path, enc="auto"):
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     f0, f1 = int(round(t0 * FPS)), int(round(t1 * FPS))
     cmd = [
@@ -91,7 +124,7 @@ def encode(ctx, t0, t1, out_path):
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
         "-i", "-",
         "-ss", f"{t0:.3f}", "-i", AUDIO,
-        "-c:v", "libx264", "-preset", "medium", "-crf", "16",
+        *encoder_args(enc),
         "-pix_fmt", "yuv420p", "-movflags", "+faststart",
         "-c:a", "aac", "-b:a", "320k", "-shortest", out_path,
     ]
@@ -136,7 +169,7 @@ def _frame_task(f):
     return arr.tobytes()
 
 
-def encode_parallel(t0, t1, out_path, jobs):
+def encode_parallel(t0, t1, out_path, jobs, enc="auto"):
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     f0, f1 = int(round(t0 * FPS)), int(round(t1 * FPS))
     cmd = [
@@ -144,7 +177,7 @@ def encode_parallel(t0, t1, out_path, jobs):
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
         "-i", "-",
         "-ss", f"{t0:.3f}", "-i", AUDIO,
-        "-c:v", "libx264", "-preset", "medium", "-crf", "16",
+        *encoder_args(enc),
         "-pix_fmt", "yuv420p", "-movflags", "+faststart",
         "-c:a", "aac", "-b:a", "320k", "-shortest", out_path,
     ]
@@ -191,26 +224,40 @@ if __name__ == "__main__":
     ap.add_argument("--out", type=str, default=None)
     ap.add_argument("--jobs", type=int, default=max(4, min(16, (os.cpu_count() or 8) // 2)))
     ap.add_argument("--serial", action="store_true")
+    ap.add_argument("--enc", choices=["auto", "nvenc", "x264"], default="auto")
+    ap.add_argument("--gl", action="store_true", help="use the OpenGL GPU pipeline")
     args = ap.parse_args()
 
-    if args.preview:
+    if args.gl:
+        import glrender
+        if args.preview:
+            glrender.preview(args.preview)
+        elif args.range:
+            glrender.encode(args.range[0], args.range[1],
+                            args.out or os.path.join(ROOT, "out", "slice.mp4"), args.enc)
+        elif args.video:
+            d = np.load(REACT)
+            glrender.encode(0.0, float(d["dur"]), args.video, args.enc)
+        else:
+            ap.print_help()
+    elif args.preview:
         ctx = build_ctx()
         print(f"loaded env={len(ctx.env)} beats={len(ctx.beats)} dur={ctx.dur:.1f}s")
         preview(ctx, args.preview)
     elif args.range and not args.serial:
         out = args.out or os.path.join(ROOT, "out", "slice.mp4")
-        encode_parallel(args.range[0], args.range[1], out, args.jobs)
+        encode_parallel(args.range[0], args.range[1], out, args.jobs, args.enc)
     elif args.video and not args.serial:
         # need duration: quick load
         d = np.load(REACT)
-        encode_parallel(0.0, float(d["dur"]), args.video, args.jobs)
+        encode_parallel(0.0, float(d["dur"]), args.video, args.jobs, args.enc)
     else:
         ctx = build_ctx()
         print(f"loaded env={len(ctx.env)} beats={len(ctx.beats)} dur={ctx.dur:.1f}s")
         if args.range:
             encode(ctx, args.range[0], args.range[1],
-                   args.out or os.path.join(ROOT, "out", "slice.mp4"))
+                   args.out or os.path.join(ROOT, "out", "slice.mp4"), args.enc)
         elif args.video:
-            encode(ctx, 0.0, ctx.dur, args.video)
+            encode(ctx, 0.0, ctx.dur, args.video, args.enc)
         else:
             ap.print_help()

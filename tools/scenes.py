@@ -86,6 +86,7 @@ def draw_line(ui, x0, y, w, text, kind, t, tt):
 def render_log(ui, x0, y0, x1, y1, events, t, cps=54):
     w = x1 - x0 + 1
     h = y1 - y0 + 1
+    events = sorted(events, key=lambda e: e[0])
     evs = [e for e in events if e[0] <= t]
     vis = evs[-h:]
     last = vis[-1] if vis else None
