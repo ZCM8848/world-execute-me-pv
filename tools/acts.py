@@ -7,6 +7,7 @@ writes, and finally a public HuggingFace repository.
 """
 import math
 import os
+import re
 import wave
 
 import numpy as np
@@ -99,7 +100,69 @@ def _load_kill_log():
     return rows
 
 
-KILL_LOG = _load_kill_log()
+_HW_SUBS = [
+    (r"AMD Ryzen 9 9955HX3D 16-Core Processor", "Intel(R) Xeon(R) 6980P"),
+    (r"family: 0x1a, model: 0x44, stepping: 0x0", "family: 0x6, model: 0xad, stepping: 0x1"),
+    (r"AMD AuthenticAMD", "Intel GenuineIntel"),
+    (r"Fam17h\+ core perfctr, AMD PMU driver", "Granite Rapids core perfctr, Intel PMU driver"),
+    (r"amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled",
+     "intel_pstate: HWP enabled, balanced-performance"),
+    (r"amd_pstate: The CPPC feature is supported but currently disabled by the BIOS\.",
+     "intel_pstate: turbo passthrough on, platform profile = performance"),
+    (r"Linux version 6\.18\.33\.2-microsoft-standard-WSL2 \(root@[0-9a-f]+\)[^\n]*",
+     "Linux version 6.11.0-24-generic (buildd@lcy02-amd64-057) #24-Ubuntu SMP PREEMPT_DYNAMIC"),
+    (r"casey", "svc-world"),
+    (r"CPU topo: Allowing 32 present CPUs plus 0 hotplug CPUs",
+     "CPU topo: Allowing 256 present CPUs plus 0 hotplug CPUs"),
+    (r"Num\. cores per package:    16", "Num. cores per package:    128"),
+    (r"Num\. threads per package:  32", "Num. threads per package:  256"),
+    (r"nr_cpumask_bits:32 nr_cpu_ids:32 nr_node_ids:1",
+     "nr_cpumask_bits:256 nr_cpu_ids:256 nr_node_ids:2"),
+    (r"NR_CPUS=8192 to nr_cpu_ids=32", "NR_CPUS=8192 to nr_cpu_ids=256"),
+    (r"rcu_fanout_leaf=16, nr_cpu_ids=32", "rcu_fanout_leaf=16, nr_cpu_ids=256"),
+    (r"rcu_task_cpu_ids=32", "rcu_task_cpu_ids=256"),
+    (r"CPUs=32, Nodes=1", "CPUs=256, Nodes=2"),
+    (r"smp: Brought up 1 node, 32 CPUs", "smp: Brought up 2 nodes, 256 CPUs"),
+    (r"smpboot: Total of 32 processors activated \(159695\.29 BogoMIPS\)",
+     "smpboot: Total of 256 processors activated (1382000.00 BogoMIPS)"),
+    (r"Total pages: 12487327", "Total pages: 268435456"),
+    (r"tsc: Detected 2495\.239 MHz processor", "tsc: Detected 2500.000 MHz processor"),
+    (r"Memory: 48918888K/49949308K available \(20176K kernel code, 3632K rwdata, 14820K rodata, "
+     r"4852K init, 5648K bss, 1009868K reserved, 0K cma-reserved\)",
+     "Memory: 1056486432K/1073741824K available (20176K kernel code, 3632K rwdata, 14820K rodata, "
+     "4852K init, 5648K bss, 13434880K reserved, 0K cma-reserved)"),
+    (r"PCI: Fatal: No config space access function found", "PCI: Using configuration type 1 for base access"),
+    (r"PCI: System does not support PCI", "PCI: Probing PCI hardware (bus 00)"),
+    (r"DMI not present or invalid\.", "DMI: Intel Corporation S2600WFT/X11DPi-N(T), BIOS 3.4 01/12/2025"),
+]
+_HW_DROP = (
+    "wsl-pro", "/mnt/", "microsoft", "windows agent", "wslg", "ubuntu pro", "wsl",
+    "hyper-v", "hyperv", "hv_vmbus", "hv_pci", "hv_utils", "hv_balloon", "hv_sock",
+    "vmbus", "vrtual", "microsft", "msftvm", "msft", "vmware", "virtio", "hv_",
+    "virtual disk", "storvsc", "netvsc", "dxgkrnl", "paravirtualized", "hvc0",
+    "squashfs", "9p", "pcpu-alloc",
+)
+
+
+def _sanitize_kill_log(rows):
+    out = []
+    for s, k in rows:
+        low = s.lower()
+        if any(d in low for d in _HW_DROP):
+            continue
+        for pat, rep in _HW_SUBS:
+            s = re.sub(pat, rep, s)
+        out.append((s, k))
+        if "smpboot: CPU0:" in s:
+            out.append(("kernel: smpboot: Allowing 256 CPUs", "dim"))
+        if "PCI: Probing PCI hardware" in s:
+            out.append(("kernel: nvme nvme0: PCIe 5.0 x4, 8192 queues, 256 depth", "dim"))
+            out.append(("kernel: nvme nvme0: 8.0 TB (8001563222016 512-byte sectors)", "dim"))
+            out.append(("kernel: mlx5_core 0000:b1:00.0: 400 Gb/s, RoCE v2 enabled", "dim"))
+    return out
+
+
+KILL_LOG = _sanitize_kill_log(_load_kill_log())
 
 # the AI's own voice, threaded through the real systemd output at the exact
 # lines that trigger it
@@ -342,7 +405,7 @@ def act_points(ui, t, m):
         (38.5, "world-core: manifold estimate dim=12.4 (non-integer)", "dim"),
         (41.0, "n.mori: leave the logs running tonight", "say"),
     ]) + scenes.worldmon_lines(t, m))
-    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "points", A2)
+    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "points", A2, A3)
     dash(ui, t, m, left, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return 0.0, 0.05 * pulse(t)
 
@@ -399,8 +462,8 @@ def act_identity(ui, t, m):
         (98.0, "n.mori: the slow weights are drifting. that is new.", "say"),
         (101.0, "world-core: i will be whatever the moment needs", "plain"),
     ]) + scenes.worldmon_lines(t, m))
-    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "identity", A6)
-    mid = mid_art_named("moonshot", A6)
+    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "identity", A6, A7)
+    mid = mid_art_named("prism", A6)
     right = lambda ui, t, m: scenes.log_pane(ui, 128, 1, COLS - 1, 26, t, "system", A6)
     dash(ui, t, m, left, mid, right, j)
     return 0.0, 0.06 * pulse(t)
@@ -431,7 +494,7 @@ def act_fragments(ui, t, m):
         (131.0, "sh: ILLEGAL ARGUMENTS detected in audit transcript", "err"),
         (133.0, "world-core: argument stack depth 65,536", "dim"),
     ]) + scenes.worldmon_lines(t, m))
-    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "fragments", A8)
+    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "fragments", A8, A9)
     mid = mid_art_named("fragments", A8)
     dash(ui, t, m, left, mid, right_audit, j)
     return 0.2 * pulse(t), 0.5 * pulse(t)

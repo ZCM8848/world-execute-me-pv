@@ -247,14 +247,21 @@ def nvtop_pane(ui, x0, y0, x1, y1, t, m):
     xx, yy = x0 + 2, y0 + 1
     utils = CLUSTER.gpu_utils(t, 8)
     temps = CLUSTER.gpu_temps(t, 8)
-    ui.put(xx, yy, "DEV       GPU%          TEMP", fg=P["bblue"], bg=P["bg"], bold=True)
-    barw = max(8, x1 - x0 - 34)
+    devw = 9
+    barx = xx + devw
+    barw = max(8, x1 - x0 - 40)
+    pctx = barx + barw + 2
+    tmpc = pctx + 6
+    ui.put(xx, yy, "DEV", fg=P["bblue"], bg=P["bg"], bold=True)
+    ui.put(barx, yy, "GPU%".center(barw), fg=P["bblue"], bg=P["bg"], bold=True)
+    ui.put(pctx - 3, yy, "UTIL", fg=P["bblue"], bg=P["bg"], bold=True)
+    ui.put(tmpc - 1, yy, "TEMP", fg=P["bblue"], bg=P["bg"], bold=True)
     for i, (dev, util, mem, tot, pwr) in enumerate(logs.NVDEV):
         row = yy + 1 + i
-        u = utils[i] * 100
-        ui.put(xx, row, f"{dev:<8}", fg=P["fg"], bg=P["bg"])
-        ui.bar(xx + 9, row, barw, utils[i], fg=P["bcyan"] if utils[i] > 0.6 else P["cyan"], bg=P["bg"])
-        ui.put(xx + 9 + barw + 1, row, f"{u:3.0f}%  {temps[i]:4.1f}\u00b0C", fg=P["fg"], bg=P["bg"])
+        ui.put(xx, row, f"{dev:<{devw}}", fg=P["fg"], bg=P["bg"])
+        ui.bar(barx, row, barw, utils[i], fg=P["bcyan"] if utils[i] > 0.6 else P["cyan"], bg=P["bg"])
+        ui.put(pctx, row, f"{utils[i] * 100:4.0f}%", fg=P["fg"], bg=P["bg"])
+        ui.put(tmpc, row, f"{temps[i]:6.1f}\u00b0C", fg=P["fg"], bg=P["bg"])
     row = yy + 2 + len(logs.NVDEV)
     ui.put(xx, row, f"total   {m['power']:.2f} MW    util {m['util'] * 100:.1f}%    {GPUS} GPUs online {int(m['online'] * 100)}%", fg=P["byellow"], bg=P["bg"])
     ui.put(xx, row + 1, f"NVLink 5  intra-rack 1.8 TB/s   IB NDR 36/36 up   400 Gb/s", fg=P["dim"], bg=P["bg"])
@@ -265,7 +272,7 @@ def thermal_pane(ui, x0, y0, x1, y1, t, m):
     xx, yy = x0 + 2, y0 + 1
     rows = [
         ("GPU inlet", f"{m['gpu_in']:.1f}\u00b0C", m["gpu_in"] / 40, P["bcyan"]),
-        ("GPU outlet", f"{m['gpu_out']:.1f}\u00b0C", m["gpu_out"] / 50, P["borange"]),
+        ("GPU outlet", f"{m['gpu_out']:.1f}\u00b0C", m["gpu_out"] / 90, P["borange"]),
         ("coolant", f"{14.2 * m['act']:.1f} L/s", m["act"], P["bblue"]),
         ("fan total", f"{m['fan']:,.0f} RPM", m["fan"] / 6400, P["green"]),
         ("PDU-A", f"{m['power'] / 2:.2f} MW", m["power"] / 2 / 1.0, P["green"]),
@@ -303,7 +310,10 @@ def net_pane(ui, x0, y0, x1, y1, t, m):
 THINK_CPS = 90
 
 
-def think_pane(ui, x0, y0, x1, y1, t, theme, t0):
+THINK_DT = 0.0176  # ~57 lines/s, matched to the EXECUTION log scroll rate
+
+
+def think_pane(ui, x0, y0, x1, y1, t, theme, t0, t1):
     pane(ui, x0, y0, x1, y1, "0:think :: world-core", active=True, tfg=P["bcyan"])
     xx, yy = x0 + 2, y0 + 2
     i = int(max(0, min(len(art.ENV) - 1, t * 30)))
@@ -322,22 +332,27 @@ def think_pane(ui, x0, y0, x1, y1, t, theme, t0):
     ui.put(xx, yy + 1, f"valence {val:+.2f}   arousal {ar:.2f}   spec {sp:.3f}",
            fg=P["dim"], bg=P["bg"])
     corpus = logs.THOUGHTS.get(theme, logs.THOUGHTS["points"])
-    events = [(t0 + 0.6 + k * 1.5, line, "plain") for k, line in enumerate(corpus)]
-    render_log(ui, xx, yy + 3, x1 - 2, y1 - 1, events, t, cps=THINK_CPS)
+    n = max(1, int((t1 - t0) / THINK_DT))
+    events = [(t0 + 0.2 + k * THINK_DT,
+               f"[tok {k:06d}] {corpus[k % len(corpus)]}", "plain") for k in range(n)]
+    render_log(ui, xx, yy + 3, x1 - 2, y1 - 1, events, t, cps=6000)
 
 
 def hw_pane(ui, x0, y0, x1, y1, t, m):
     pane(ui, x0, y0, x1, y1, "0:power :: pdu / nvlink", active=True, tfg=P["byellow"])
     xx, yy = x0 + 2, y0 + 1
     rack = CLUSTER.rack_util(t)
-    pwr = m["power"] / RACKS
-    ui.put(xx, yy, "RACK     kW     util", fg=P["bblue"], bg=P["bg"], bold=True)
+    pwrkw = m["power"] / RACKS * 1000.0
+    ui.put(xx, yy, "RACK", fg=P["bblue"], bg=P["bg"], bold=True)
+    ui.put(xx + 17, yy, "   kW", fg=P["bblue"], bg=P["bg"], bold=True)
+    ui.put(xx + 28, yy, " util", fg=P["bblue"], bg=P["bg"], bold=True)
     for i in range(RACKS):
         row = yy + 1 + i
         u = rack[i]
         ui.put(xx, row, f"r{i:02d}", fg=P["dim"], bg=P["bg"])
-        ui.bar(xx + 5, row, 14, u, fg=P["bcyan"] if u > 0.6 else P["cyan"], bg=P["bg"])
-        ui.put(xx + 21, row, f"{pwr * u:5.2f}  {u * 100:3.0f}%", fg=P["fg"], bg=P["bg"])
+        ui.bar(xx + 5, row, 12, u, fg=P["bcyan"] if u > 0.6 else P["cyan"], bg=P["bg"])
+        ui.put(xx + 18, row, f"{pwrkw * u:6.1f}", fg=P["fg"], bg=P["bg"])
+        ui.put(xx + 28, row, f"{u * 100:3.0f}%", fg=P["fg"], bg=P["bg"])
     row = yy + RACKS + 1
     ui.put(xx, row, "bus ripple 41 mV ac / 12 mV dc", fg=P["dim"], bg=P["bg"])
     ui.put(xx, row + 1, f"fan {m['fan']:,.0f} RPM   PUE {m['pue']:.2f}   water {m['water']:.1f}\u00b0C",

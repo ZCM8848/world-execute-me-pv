@@ -70,8 +70,8 @@ class Cluster:
         ld = self.load(t)
         act = on * (0.15 + 0.85 * ld)
         power = POWER_PEAK_MW * act
-        gpu_in = 22.4 - 2.6 * (1 - on) + 1.2 * ld
-        gpu_dt = 3.1 + 8.4 * act + 0.15 * _w(t, 0.9)
+        gpu_in = 24.0 - 1.8 * (1 - on) + 3.0 * ld + 0.6 * _w(t, 0.4)
+        gpu_dt = 14.0 + 30.0 * act + 0.8 * _w(t, 0.9)
         gpu_out = gpu_in + gpu_dt
         fan = (120 + 6060 * act) * (1 + 0.006 * _w(t, 0.7))
         util = clamp(0.86 * ld + 0.015 * _w(t, 1.3), 0, 1)
@@ -110,8 +110,9 @@ class Cluster:
 
     def gpu_temps(self, t, n=16):
         m = self.metrics(t)
-        on = self.online(t)
-        return [m["gpu_out"] - 8.0 + 8.0 * (0.5 + 0.5 * math.sin(i * 2.1 + t * 0.2)) * on for i in range(n)]
+        a = m["act"]
+        return [38.0 + 40.0 * a + 5.0 * math.sin(i * 2.1 + t * 0.2) + 1.5 * _w(t * 3 + i, 1.1)
+                for i in range(n)]
 
     def node_states(self, t):
         on = self.online(t)

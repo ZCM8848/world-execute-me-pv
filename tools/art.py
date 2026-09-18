@@ -534,15 +534,39 @@ def fragments(ui, x0, y0, x1, y1, t, m):
            % (4.1 * (1 - prog)), fg=P["dim"], bg=P["bg"])
 
 
-def moonshot(ui, x0, y0, x1, y1, t, m):
+PRISM_SHOTS = [
+    (88.6, 90.6, "viz :: beam", "beam"),
+    (90.6, 92.6, "viz :: prism", "prism_shot"),
+    (92.6, 94.6, "viz :: refraction", "refraction"),
+    (94.6, 97.0, "viz :: spectrum", "spectrum"),
+    (97.0, 99.4, "viz :: convergence", "convergence"),
+    (99.4, 103.5, "viz :: ???", None),
+]
+MARK_T, MARK_W = 100.0, 0.4
+
+
+def prism_show(ui, x0, y0, x1, y1, t, m):
     import decal
-    pane(ui, x0, y0, x1, y1, "viz :: moonshot", active=True, tfg=P["bcyan"])
-    p = 0.0
-    for tb in (89.6, 93.4, 97.2, 101.0):
-        q = (t - tb) / 0.55
-        if 0.0 <= q <= 1.0:
-            p = max(p, 1.0 - abs(2.0 * q - 1.0))
-    decal.moonshot_kimi(ui, x0, y0, x1, y1, p)
+    a, b, title, fn = PRISM_SHOTS[-1]
+    for s in PRISM_SHOTS:
+        if s[0] <= t < s[1]:
+            a, b, title, fn = s
+            break
+    pane(ui, x0, y0, x1, y1, title, active=True, tfg=P["bcyan"])
+    if fn is not None:
+        getattr(decal, fn)(ui, x0, y0, x1, y1, seg(t, a, b))
+        return
+    # final shot: a dim residue field, then a single flash of the mark
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    rx, ry = (x1 - x0) / 2.0 - 3, (y1 - y0) / 2.0 - 1
+    for i in range(24):
+        ang = i * 2.399963
+        rr = math.sqrt((i + 0.5) / 24.0) * 0.7
+        ui.put(int(cx + math.cos(ang) * rr * rx), int(cy + math.sin(ang) * rr * ry),
+               "\u00b7", fg=P["faint"], bg=P["bg"])
+    q = (t - MARK_T) / MARK_W
+    if 0.0 <= q <= 1.0:
+        decal.reveal(ui, x0, y0, x1, y1, 1.0 - abs(2.0 * q - 1.0))
 
 
 # ---------------------------------------------------------------------------
@@ -579,7 +603,7 @@ def art_pane(ui, x0, y0, x1, y1, t, m, hint=None, ts=None):
         network(ui, x0, y0, x1, y1, t, m)
     elif name == "fragments":
         fragments(ui, x0, y0, x1, y1, t, m)
-    elif name == "moonshot":
-        moonshot(ui, x0, y0, x1, y1, t, m)
+    elif name == "prism":
+        prism_show(ui, x0, y0, x1, y1, t, m)
     else:
         lattice(ui, x0, y0, x1, y1, t, m)

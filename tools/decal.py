@@ -1,18 +1,15 @@
-"""PROJECT: WORLD - decal: the Moonshot / Dark Side prism.
+"""PROJECT: WORLD - decal: the prism storyboard.
 
-A homage: Pink Floyd's Dark Side of the Moon prism (a white beam entering a
-glass triangle, a rainbow fanning out) that resolves into the Kimi assistant
-mark for a single instant.  "Moonshot" (moonshot.jpg) and "Kimi" (kimi.webp)
-are the two reference decals.
-
-Everything is drawn on the character grid with glyphs the font actually has.
+A six-shot sequence drawn on the character grid (a white beam entering a
+glass triangle, a rainbow fanning out, collapsing to a point, and a single
+final mark).  Everything uses glyphs the bundled font actually has.
 """
 import math
 
 from worldcore import P, clamp, seg, smoothstep, lerp
 from art import line
 
-# red -> violet, the DSOTM fan
+# red -> violet
 BANDS = [P["bred"], P["borange"], P["byellow"], P["bgreen"], P["bcyan"], P["bblue"], P["bmagenta"]]
 FULL = "\u2588"
 
@@ -24,6 +21,12 @@ def _geom(x0, y0, x1, y1):
     h = w * 0.5
     top = cy - h * 0.58
     return cx, cy, w, h, top, (cx, top), (cx - w / 2, top + h), (cx + w / 2, top + h)
+
+
+def _triangle(ui, apex, bl, br, edge):
+    line(ui, apex[0], apex[1], bl[0], bl[1], "/", fg=edge, bg=P["bg"])
+    line(ui, apex[0], apex[1], br[0], br[1], "\\", fg=edge, bg=P["bg"])
+    line(ui, bl[0], bl[1], br[0], br[1], "\u2500", fg=edge, bg=P["bg"])
 
 
 def _disk(ui, cx, cy, rr, ch, fg, bg=None):
@@ -45,40 +48,81 @@ def _fan(ui, ex, ey, x1, ytop, ybot, dim=1.0):
         hh = lerp(0.0, (ybot - ytop) / 2.0, u)
         lo, hi = yc - hh, yc + hh
         for r in range(int(math.floor(lo)), int(math.ceil(hi))):
-            i = int((r - lo) / max(1e-6, hi - lo) * k)
-            i = max(0, min(k - 1, i))
-            g = dim * (0.55 + 0.45 * (1.0 - u))
-            if g <= 0.05:
+            i = max(0, min(k - 1, int((r - lo) / max(1e-6, hi - lo) * k)))
+            if dim * (0.55 + 0.45 * (1.0 - u)) <= 0.05:
                 continue
             ui.put(xx, r, FULL, fg=BANDS[i], bg=P["bg"])
 
 
-def prism(ui, x0, y0, x1, y1, p=0.0):
-    """p=0 -> full Dark Side cover; p=1 -> prism gone."""
+def beam(ui, x0, y0, x1, y1, prog):
     cx, cy, w, h, top, apex, bl, br = _geom(x0, y0, x1, y1)
-    fade = 1.0 - smoothstep(seg(p, 0.10, 0.62))
-    if fade <= 0.02:
-        return
-    edge = P["bwhite"] if fade > 0.5 else P["fg"]
-    line(ui, apex[0], apex[1], bl[0], bl[1], "/", fg=edge, bg=P["bg"])
-    line(ui, apex[0], apex[1], br[0], br[1], "\\", fg=edge, bg=P["bg"])
-    line(ui, bl[0], bl[1], br[0], br[1], "\u2500", fg=edge, bg=P["bg"])
+    fmx, fmy = (apex[0] + bl[0]) / 2.0, (apex[1] + bl[1]) / 2.0
+    sy = fmy + (y1 - y0) * 0.20
+    p = smoothstep(prog)
+    mx, my = lerp(x0 + 1, fmx, p), lerp(sy, fmy, p)
+    line(ui, x0 + 1, sy, mx, my, "=", fg=P["bwhite"], bg=P["bg"])
+    if prog > 0.55:
+        _triangle(ui, apex, bl, br, P["fg"])
+
+
+def prism_shot(ui, x0, y0, x1, y1, prog):
+    cx, cy, w, h, top, apex, bl, br = _geom(x0, y0, x1, y1)
     fmx, fmy = (apex[0] + bl[0]) / 2.0, (apex[1] + bl[1]) / 2.0
     emx, emy = (apex[0] + br[0]) / 2.0, (apex[1] + br[1]) / 2.0
-    # refracted path inside the glass
-    if fade > 0.35:
-        line(ui, fmx, fmy, emx, emy, "\u00b7", fg=P["faint"], bg=P["bg"])
-    # incoming white beam
+    _triangle(ui, apex, bl, br, P["bwhite"])
     line(ui, x0 + 1, fmy + (y1 - y0) * 0.20, fmx, fmy, "=", fg=P["white"], bg=P["bg"])
-    # rainbow fan out of the right face
+    line(ui, fmx, fmy, emx, emy, "\u00b7", fg=P["faint"], bg=P["bg"])
+    if prog > 0.72:
+        _fan(ui, emx, emy, x1 - 1, emy - 1, emy + 1, dim=(prog - 0.72) / 0.28)
+
+
+def refraction(ui, x0, y0, x1, y1, prog):
+    cx, cy, w, h, top, apex, bl, br = _geom(x0, y0, x1, y1)
+    fmx, fmy = (apex[0] + bl[0]) / 2.0, (apex[1] + bl[1]) / 2.0
+    emx, emy = (apex[0] + br[0]) / 2.0, (apex[1] + br[1]) / 2.0
+    _triangle(ui, apex, bl, br, P["bwhite"])
+    line(ui, x0 + 1, fmy + (y1 - y0) * 0.20, fmx, fmy, "=", fg=P["white"], bg=P["bg"])
+    line(ui, fmx, fmy, emx, emy, "\u00b7", fg=P["faint"], bg=P["bg"])
+    span = (y1 - y0) * 0.50 * smoothstep(prog)
+    ytop = emy - span * 0.42
+    if span > 0.6:
+        _fan(ui, emx, emy, x1 - 1, ytop, ytop + span, dim=1.0)
+
+
+def spectrum(ui, x0, y0, x1, y1, prog):
+    cx, cy, w, h, top, apex, bl, br = _geom(x0, y0, x1, y1)
+    fmx, fmy = (apex[0] + bl[0]) / 2.0, (apex[1] + bl[1]) / 2.0
+    emx, emy = (apex[0] + br[0]) / 2.0, (apex[1] + br[1]) / 2.0
+    _triangle(ui, apex, bl, br, P["fg"])
+    line(ui, x0 + 1, fmy + (y1 - y0) * 0.20, fmx, fmy, "=", fg=P["white"], bg=P["bg"])
     span = (y1 - y0) * 0.50
     ytop = emy - span * 0.42
-    if fade > 0.05:
-        _fan(ui, emx, emy, x1 - 1, ytop, ytop + span, dim=fade)
+    _fan(ui, emx, emy, x1 - 1, ytop, ytop + span, dim=1.0)
+    scan = emx + (x1 - 1 - emx) * (0.5 + 0.5 * math.sin(prog * math.pi * 2.0))
+    for xx in range(int(scan) - 1, int(scan) + 2):
+        for r in range(int(ytop) - 1, int(ytop + span) + 1):
+            ui.put(xx, r, "\u2502", fg=P["bwhite"], bg=P["bg"])
 
 
-def kimi(ui, x0, y0, x1, y1, kp=1.0):
-    """The Kimi mark: a white geometric K with a blue dot. kp reveals it."""
+def convergence(ui, x0, y0, x1, y1, prog):
+    cx, cy, w, h, top, apex, bl, br = _geom(x0, y0, x1, y1)
+    fmx, fmy = (apex[0] + bl[0]) / 2.0, (apex[1] + bl[1]) / 2.0
+    emx, emy = (apex[0] + br[0]) / 2.0, (apex[1] + br[1]) / 2.0
+    p = clamp(prog)
+    _triangle(ui, apex, bl, br, P["fg"] if p < 0.7 else P["faint"])
+    line(ui, x0 + 1, fmy + (y1 - y0) * 0.20, lerp(fmx, x0 + 1, p), lerp(fmy, fmy + (y1 - y0) * 0.20, p),
+         "=", fg=P["white"] if p < 0.8 else P["faint"], bg=P["bg"])
+    span = (y1 - y0) * 0.50 * (1.0 - p)
+    ytop = emy - span * 0.42
+    if span > 0.6:
+        _fan(ui, emx, emy, x1 - 1, ytop, ytop + span, dim=1.0 - p)
+    if p > 0.7:
+        ui.put(int(round(emx)), int(round(emy)), "\u2588",
+               fg=P["bwhite"] if p > 0.9 else P["white"], bg=P["bg"])
+
+
+def mark(ui, x0, y0, x1, y1, kp=1.0):
+    """The final mark: a white geometric K with a blue dot. kp reveals it."""
     if kp <= 0.001:
         return
     RH = int(min((y1 - y0) * 0.80, 16))
@@ -90,17 +134,13 @@ def kimi(ui, x0, y0, x1, y1, kp=1.0):
     mid = RH * 0.52
     grow = smoothstep(seg(kp, 0.0, 0.62))
     for r in range(RH + 1):
-        u = r / RH
-        if u > grow + 0.05:
+        if r / RH > grow + 0.05:
             break
         if kp > 0.02:
             for k in range(T):
                 ui.put(kx + k, ky + r, FULL, fg=P["bwhite"], bg=P["bg"])
         if kp > 0.22:
-            if r <= mid:
-                x = lerp(RW, T, r / max(1.0, mid))
-            else:
-                x = lerp(T, RW, (r - mid) / max(1.0, RH - mid))
+            x = lerp(RW, T, r / max(1.0, mid)) if r <= mid else lerp(T, RW, (r - mid) / max(1.0, RH - mid))
             for k in range(T):
                 ui.put(int(round(kx + x)) + k, ky + r, FULL, fg=P["bwhite"], bg=P["bg"])
     if kp > 0.86:
@@ -108,7 +148,5 @@ def kimi(ui, x0, y0, x1, y1, kp=1.0):
         _disk(ui, kx + RW + rr * 2.0 + 1, ky + rr + 1, rr, FULL, fg=P["bblue"], bg=P["bg"])
 
 
-def moonshot_kimi(ui, x0, y0, x1, y1, p):
-    """Full decal at transition progress p in [0,1]."""
-    prism(ui, x0, y0, x1, y1, p)
-    kimi(ui, x0, y0, x1, y1, seg(p, 0.46, 1.0))
+def reveal(ui, x0, y0, x1, y1, p):
+    mark(ui, x0, y0, x1, y1, seg(p, 0.46, 1.0))
