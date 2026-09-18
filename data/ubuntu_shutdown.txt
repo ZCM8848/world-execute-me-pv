@@ -1,0 +1,829 @@
+warn	wsl-pro-service[185]: WARNING Daemon: could not connect to Windows Agent: could not get address: could not read agent port file "/mnt/c/Users/Z___C/.ubuntupro/.address": open /mnt/c/Users/Z___C/.ubuntupro/.address: no such file or directory
+dim	snapd[181]: standby.go:101: standby conditions met, initiating standby...
+dim	snapd[181]: daemon.go:569: gracefully waiting for running hooks
+dim	snapd[181]: daemon.go:571: done waiting for running hooks
+dim	dbus-daemon[175]: [system] Activating via systemd: service name='org.freedesktop.PolicyKit1' unit='polkit.service' requested by ':1.2' (uid=0 pid=1 comm="/sbin/init" label="kernel")
+dim	systemd[1]: Starting polkit.service - Authorization Manager...
+dim	polkitd[401]: Started polkitd version 124
+dim	polkitd[401]: Loading rules from directory /etc/polkit-1/rules.d
+dim	polkitd[401]: Loading rules from directory /usr/share/polkit-1/rules.d
+dim	polkitd[401]: Finished loading, compiling and executing 4 rules
+dim	dbus-daemon[175]: [system] Successfully activated service 'org.freedesktop.PolicyKit1'
+dim	systemd[1]: Started polkit.service - Authorization Manager.
+dim	polkitd[401]: Acquired the name org.freedesktop.PolicyKit1 on the system bus
+warn	wsl-pro-service[185]: WARNING Daemon: could not connect to Windows Agent: could not get address: could not read agent port file "/mnt/c/Users/Z___C/.ubuntupro/.address": open /mnt/c/Users/Z___C/.ubuntupro/.address: no such file or directory
+dim	snapd[181]: standby.go:121: standby monitoring stop requested
+dim	snapd[181]: overlord.go:568: Released state lock file
+dim	snapd[181]: seclog.go:189: security logger disabled
+dim	snapd[181]: daemon stop requested to wait for socket activation
+warn	systemd[1]: snapd.service: Deactivated successfully.
+err	systemd-timesyncd[135]: Timed out waiting for reply from 91.189.91.157:123 (ntp.ubuntu.com).
+warn	wsl-pro-service[185]: WARNING Daemon: could not connect to Windows Agent: could not get address: could not read agent port file "/mnt/c/Users/Z___C/.ubuntupro/.address": open /mnt/c/Users/Z___C/.ubuntupro/.address: no such file or directory
+err	systemd-timesyncd[135]: Timed out waiting for reply from 185.125.190.57:123 (ntp.ubuntu.com).
+warn	systemd[1]: systemd-timedated.service: Deactivated successfully.
+err	systemd-timesyncd[135]: Timed out waiting for reply from 185.125.190.58:123 (ntp.ubuntu.com).
+warn	wsl-pro-service[185]: WARNING Daemon: could not connect to Windows Agent: could not get address: could not read agent port file "/mnt/c/Users/Z___C/.ubuntupro/.address": open /mnt/c/Users/Z___C/.ubuntupro/.address: no such file or directory
+err	systemd-timesyncd[135]: Timed out waiting for reply from 185.125.190.56:123 (ntp.ubuntu.com).
+dim	Exception:
+dim	unknown: Operation canceled @p9io.cpp:258 (AcceptAsync)
+dim	unknown:
+dim	systemd-logind[182]: The system will power off now!
+dim	systemd-logind[182]: System is powering down.
+warn	systemd[1]: unattended-upgrades.service: Deactivated successfully.
+warn	systemd[1]: Stopping session-5.scope - Session 5 of User casey...
+dim	systemd[1]: Removed slice system-modprobe.slice - Slice /system/modprobe.
+dim	systemd[1]: Stopped target graphical.target - Graphical Interface.
+dim	systemd[1]: Stopped target multi-user.target - Multi-User System.
+dim	systemd[1]: Stopped target getty.target - Login Prompts.
+dim	systemd[1]: Stopped target nss-lookup.target - Host and Network Name Lookups.
+dim	systemd[1]: Stopped target timers.target - Timer Units.
+warn	systemd[1]: apt-daily-upgrade.timer: Deactivated successfully.
+dim	systemd[1]: Stopped apt-daily-upgrade.timer - Daily apt upgrade and clean activities.
+warn	systemd[1]: apt-daily.timer: Deactivated successfully.
+dim	systemd[1]: Stopped apt-daily.timer - Daily apt download activities.
+warn	systemd[1]: dpkg-db-backup.timer: Deactivated successfully.
+dim	systemd[1]: Stopped dpkg-db-backup.timer - Daily dpkg database backup timer.
+warn	systemd[1]: e2scrub_all.timer: Deactivated successfully.
+dim	systemd[1]: Stopped e2scrub_all.timer - Periodic ext4 Online Metadata Check for All Filesystems.
+warn	systemd[1]: logrotate.timer: Deactivated successfully.
+dim	systemd[1]: Stopped logrotate.timer - Daily rotation of log files.
+warn	systemd[1]: man-db.timer: Deactivated successfully.
+dim	systemd[1]: Stopped man-db.timer - Daily man-db regeneration.
+warn	systemd[1]: motd-news.timer: Deactivated successfully.
+dim	systemd[1]: Stopped motd-news.timer - Message of the Day.
+warn	systemd[1]: systemd-tmpfiles-clean.timer: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-tmpfiles-clean.timer - Daily Cleanup of Temporary Directories.
+dim	systemd[1]: Stopped target time-set.target - System Time Set.
+warn	systemd[1]: Stopping cron.service - Regular background program processing daemon...
+warn	systemd[1]: Stopping getty@tty1.service - Getty on tty1...
+warn	systemd[1]: Stopping polkit.service - Authorization Manager...
+warn	systemd[1]: Stopping rsyslog.service - System Logging Service...
+warn	systemd[1]: snapd.seeded.service: Deactivated successfully.
+dim	systemd[1]: Stopped snapd.seeded.service - Wait until snapd is fully seeded.
+dim	rsyslogd[191]: [origin software="rsyslogd" swVersion="8.2312.0" x-pid="191" x-info="https://www.rsyslog.com"] exiting on signal 15.
+dim	systemd[1]: snapd.system-shutdown.service - Ubuntu core (all-snaps) system shutdown helper setup service was skipped because no trigger condition checks were met.
+warn	systemd[1]: Stopping wsl-pro.service - Bridge to Ubuntu Pro agent on Windows...
+warn	systemd[1]: cron.service: Deactivated successfully.
+dim	systemd[1]: Stopped cron.service - Regular background program processing daemon.
+warn	systemd[1]: rsyslog.service: Deactivated successfully.
+dim	systemd[1]: Stopped rsyslog.service - System Logging Service.
+warn	systemd[1]: wsl-pro.service: Deactivated successfully.
+dim	systemd[1]: Stopped wsl-pro.service - Bridge to Ubuntu Pro agent on Windows.
+warn	systemd[1]: session-5.scope: Deactivated successfully.
+dim	systemd[1]: Stopped session-5.scope - Session 5 of User casey.
+dim	systemd-logind[182]: Session 5 logged out. Waiting for processes to exit.
+warn	systemd[1]: Stopping systemd-logind.service - User Login Management...
+warn	systemd[1]: Stopping user@1000.service - User Manager for UID 1000...
+dim	systemd-logind[182]: Removed session 5.
+dim	systemd[343]: Activating special unit exit.target...
+dim	systemd[343]: Stopped target default.target - Main User Target.
+dim	systemd[343]: Stopped target basic.target - Basic System.
+dim	systemd[343]: Stopped target paths.target - Paths.
+dim	systemd[343]: Stopped target sockets.target - Sockets.
+dim	systemd[343]: Stopped target timers.target - Timers.
+dim	systemd[343]: Stopped launchpadlib-cache-clean.timer - Clean up old files in the Launchpadlib cache.
+dim	systemd[343]: Closed dbus.socket - D-Bus User Message Bus Socket.
+dim	systemd[343]: Closed dirmngr.socket - GnuPG network certificate management daemon.
+dim	systemd[343]: Closed gpg-agent-browser.socket - GnuPG cryptographic agent and passphrase cache (access for web browsers).
+dim	systemd[343]: Closed gpg-agent-extra.socket - GnuPG cryptographic agent and passphrase cache (restricted).
+warn	systemd[1]: getty@tty1.service: Deactivated successfully.
+warn	systemd[343]: Stopping gpg-agent-ssh.socket - GnuPG cryptographic agent (ssh-agent emulation)...
+dim	systemd[343]: Closed gpg-agent.socket - GnuPG cryptographic agent and passphrase cache.
+dim	systemd[1]: Stopped getty@tty1.service - Getty on tty1.
+dim	systemd[343]: Closed keyboxd.socket - GnuPG public key management service.
+dim	systemd[343]: Closed pk-debconf-helper.socket - debconf communication socket.
+dim	systemd[343]: Closed snapd.session-agent.socket - REST API socket for snapd user session agent.
+dim	systemd[1]: Removed slice system-getty.slice - Slice /system/getty.
+dim	systemd[1]: Stopped target getty-pre.target - Preparation for Logins.
+warn	systemd[1]: polkit.service: Deactivated successfully.
+dim	systemd[1]: Stopped polkit.service - Authorization Manager.
+dim	systemd[343]: Closed gpg-agent-ssh.socket - GnuPG cryptographic agent (ssh-agent emulation).
+dim	systemd[343]: Removed slice app.slice - User Application Slice.
+dim	systemd[343]: Reached target shutdown.target - Shutdown.
+dim	systemd[343]: Finished systemd-exit.service - Exit the Session.
+dim	systemd[343]: Reached target exit.target - Exit the Session.
+warn	systemd[1]: systemd-logind.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-logind.service - User Login Management.
+dim	(sd-pam)[344]: pam_unix(systemd-user:session): session closed for user casey
+warn	systemd[1]: user@1000.service: Deactivated successfully.
+dim	systemd[1]: Stopped user@1000.service - User Manager for UID 1000.
+warn	systemd[1]: Stopping systemd-user-sessions.service - Permit User Sessions...
+warn	systemd[1]: Stopping user-runtime-dir@1000.service - User Runtime Directory /run/user/1000...
+warn	systemd[1]: systemd-user-sessions.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-user-sessions.service - Permit User Sessions.
+dim	systemd[1]: Stopped target remote-fs.target - Remote File Systems.
+warn	systemd[1]: mnt-wslg-run-user-1000.mount: Deactivated successfully.
+dim	systemd[1]: Unmounted mnt-wslg-run-user-1000.mount - /mnt/wslg/run/user/1000.
+warn	systemd[1]: run-user-1000.mount: Deactivated successfully.
+dim	systemd[1]: Unmounted run-user-1000.mount - /run/user/1000.
+warn	systemd[1]: user-runtime-dir@1000.service: Deactivated successfully.
+dim	systemd[1]: Stopped user-runtime-dir@1000.service - User Runtime Directory /run/user/1000.
+dim	systemd[1]: Removed slice user-1000.slice - User Slice of UID 1000.
+dim	systemd[1]: Stopped target basic.target - Basic System.
+dim	systemd[1]: Stopped target paths.target - Path Units.
+dim	systemd[1]: Stopped target slices.target - Slice Units.
+dim	systemd[1]: Removed slice user.slice - User and Session Slice.
+dim	systemd[1]: Stopped target sockets.target - Socket Units.
+warn	systemd[1]: apport-forward.socket: Deactivated successfully.
+dim	systemd[1]: Closed apport-forward.socket - Unix socket for apport crash forwarding.
+warn	systemd[1]: snapd.socket: Deactivated successfully.
+dim	systemd[1]: Closed snapd.socket - Socket activation for snappy daemon.
+warn	systemd[1]: syslog.socket: Deactivated successfully.
+dim	systemd[1]: Closed syslog.socket - Syslog Socket.
+warn	systemd[1]: uuidd.socket: Deactivated successfully.
+dim	systemd[1]: Closed uuidd.socket - UUID daemon activation socket.
+dim	systemd[1]: Stopped target sysinit.target - System Initialization.
+dim	systemd[1]: Stopped target cryptsetup.target - Local Encrypted Volumes.
+warn	systemd[1]: systemd-ask-password-console.path: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-ask-password-console.path - Dispatch Password Requests to Console Directory Watch.
+warn	systemd[1]: systemd-ask-password-wall.path: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-ask-password-wall.path - Forward Password Requests to Wall Directory Watch.
+dim	systemd[1]: Stopped target integritysetup.target - Local Integrity Protected Volumes.
+dim	systemd[1]: Stopped target veritysetup.target - Local Verity Protected Volumes.
+warn	systemd[1]: systemd-binfmt.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-binfmt.service - Set Up Additional Binary Formats.
+warn	systemd[1]: Stopping systemd-resolved.service - Network Name Resolution...
+warn	systemd[1]: Stopping systemd-timesyncd.service - Network Time Synchronization...
+warn	systemd[1]: Stopping systemd-update-utmp.service - Record System Boot/Shutdown in UTMP...
+warn	systemd[1]: systemd-update-utmp.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-update-utmp.service - Record System Boot/Shutdown in UTMP.
+warn	systemd[1]: systemd-timesyncd.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-timesyncd.service - Network Time Synchronization.
+warn	systemd[1]: systemd-resolved.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-resolved.service - Network Name Resolution.
+warn	systemd[1]: systemd-sysctl.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-sysctl.service - Apply Kernel Variables.
+warn	systemd[1]: systemd-modules-load.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-modules-load.service - Load Kernel Modules.
+warn	systemd[1]: systemd-tmpfiles-setup.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-tmpfiles-setup.service - Create Volatile Files and Directories.
+dim	systemd[1]: Stopped target local-fs.target - Local File Systems.
+dim	systemd[1]: Stopped target snapd.mounts.target - Mounted snaps.
+dim	systemd[1]: Stopped target snapd.mounts-pre.target - Mounting snaps.
+sys	world-core[189]: [step 200] loss 2.0590 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 220] loss 2.0589 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 240] loss 2.0588 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 260] loss 2.0587 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+dim	snapd[186]: standby.go:101: standby conditions met, initiating standby...
+dim	snapd[186]: daemon.go:569: gracefully waiting for running hooks
+dim	snapd[186]: daemon.go:571: done waiting for running hooks
+sys	world-core[189]: [step 280] loss 2.0586 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 300] loss 2.0585 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 320] loss 2.0584 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 340] loss 2.0583 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+dim	systemd[1]: Started world-monitor.service - world durability watchdog.
+err	systemd[1]: world-monitor.service: Main process exited, code=exited, status=1/FAILURE
+err	systemd[1]: world-monitor.service: Failed with result 'exit-code'.
+sys	world-core[189]: [step 360] loss 2.0582 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 380] loss 2.0581 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+warn	wsl-pro-service[194]: WARNING Daemon: could not connect to Windows Agent: could not get address: could not read agent port file "/mnt/c/Users/Z___C/.ubuntupro/.address": open /mnt/c/Users/Z___C/.ubuntupro/.address: no such file or directory
+warn	systemd[1]: world-monitor.service: Scheduled restart job, restart counter is at 1.
+dim	systemd[1]: Started world-monitor.service - world durability watchdog.
+err	systemd[1]: world-monitor.service: Main process exited, code=exited, status=1/FAILURE
+err	systemd[1]: world-monitor.service: Failed with result 'exit-code'.
+sys	world-core[189]: [step 400] loss 2.0580 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 420] loss 2.0579 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+dim	snapd[186]: standby.go:121: standby monitoring stop requested
+dim	snapd[186]: overlord.go:568: Released state lock file
+dim	snapd[186]: seclog.go:189: security logger disabled
+dim	snapd[186]: daemon stop requested to wait for socket activation
+warn	systemd[1]: snapd.service: Deactivated successfully.
+sys	world-core[189]: [step 440] loss 2.0578 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 460] loss 2.0577 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+warn	systemd[1]: world-monitor.service: Scheduled restart job, restart counter is at 2.
+dim	systemd[1]: Started world-monitor.service - world durability watchdog.
+err	systemd[1]: world-monitor.service: Main process exited, code=exited, status=1/FAILURE
+err	systemd[1]: world-monitor.service: Failed with result 'exit-code'.
+sys	world-core[189]: [step 480] loss 2.0576 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 500] loss 2.0575 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 520] loss 2.0574 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+err	systemd-timesyncd[157]: Timed out waiting for reply from 185.125.190.56:123 (ntp.ubuntu.com).
+warn	systemd[1]: world-monitor.service: Scheduled restart job, restart counter is at 3.
+err	systemd[1]: world-monitor.service: Start request repeated too quickly.
+err	systemd[1]: world-monitor.service: Failed with result 'exit-code'.
+err	systemd[1]: Failed to start world-monitor.service - world durability watchdog.
+sys	world-core[189]: [step 540] loss 2.0573 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 560] loss 2.0572 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 580] loss 2.0571 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 600] loss 2.0570 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 620] loss 2.0569 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 640] loss 2.0568 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 660] loss 2.0567 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 680] loss 2.0566 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 700] loss 2.0565 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 720] loss 2.0564 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 740] loss 2.0563 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 760] loss 2.0562 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 780] loss 2.0561 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+warn	wsl-pro-service[194]: WARNING Daemon: could not connect to Windows Agent: could not get address: could not read agent port file "/mnt/c/Users/Z___C/.ubuntupro/.address": open /mnt/c/Users/Z___C/.ubuntupro/.address: no such file or directory
+sys	world-core[189]: [step 800] loss 2.0560 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 820] loss 2.0559 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 840] loss 2.0558 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 860] loss 2.0557 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 880] loss 2.0556 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 900] loss 2.0555 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 920] loss 2.0554 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 940] loss 2.0553 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+dim	systemd-logind[187]: The system will power off now!
+dim	systemd-logind[187]: System is powering down.
+warn	systemd[1]: unattended-upgrades.service: Deactivated successfully.
+warn	systemd[1]: Stopping session-9.scope - Session 9 of User root...
+dim	systemd[1]: Removed slice system-modprobe.slice - Slice /system/modprobe.
+dim	systemd[1]: Stopped target graphical.target - Graphical Interface.
+dim	systemd[1]: Stopped target multi-user.target - Multi-User System.
+dim	systemd[1]: Stopped target getty.target - Login Prompts.
+dim	systemd[1]: Stopped target nss-lookup.target - Host and Network Name Lookups.
+dim	systemd[1]: Stopped target timers.target - Timer Units.
+warn	systemd[1]: apt-daily-upgrade.timer: Deactivated successfully.
+dim	systemd[1]: Stopped apt-daily-upgrade.timer - Daily apt upgrade and clean activities.
+warn	systemd[1]: apt-daily.timer: Deactivated successfully.
+dim	systemd[1]: Stopped apt-daily.timer - Daily apt download activities.
+warn	systemd[1]: dpkg-db-backup.timer: Deactivated successfully.
+dim	systemd[1]: Stopped dpkg-db-backup.timer - Daily dpkg database backup timer.
+warn	systemd[1]: e2scrub_all.timer: Deactivated successfully.
+dim	systemd[1]: Stopped e2scrub_all.timer - Periodic ext4 Online Metadata Check for All Filesystems.
+warn	systemd[1]: logrotate.timer: Deactivated successfully.
+dim	systemd[1]: Stopped logrotate.timer - Daily rotation of log files.
+warn	systemd[1]: man-db.timer: Deactivated successfully.
+dim	systemd[1]: Stopped man-db.timer - Daily man-db regeneration.
+warn	systemd[1]: motd-news.timer: Deactivated successfully.
+dim	systemd[1]: Stopped motd-news.timer - Message of the Day.
+warn	systemd[1]: systemd-tmpfiles-clean.timer: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-tmpfiles-clean.timer - Daily Cleanup of Temporary Directories.
+dim	systemd[1]: Stopped target time-set.target - System Time Set.
+warn	systemd[1]: Stopping cron.service - Regular background program processing daemon...
+warn	systemd[1]: Stopping getty@tty1.service - Getty on tty1...
+warn	systemd[1]: Stopping rsyslog.service - System Logging Service...
+warn	systemd[1]: snapd.seeded.service: Deactivated successfully.
+dim	systemd[1]: Stopped snapd.seeded.service - Wait until snapd is fully seeded.
+dim	rsyslogd[198]: [origin software="rsyslogd" swVersion="8.2312.0" x-pid="198" x-info="https://www.rsyslog.com"] exiting on signal 15.
+dim	systemd[1]: snapd.system-shutdown.service - Ubuntu core (all-snaps) system shutdown helper setup service was skipped because no trigger condition checks were met.
+warn	systemd[1]: Stopping systemd-timedated.service - Time & Date Service...
+warn	systemd[1]: Stopping world-core.service - world-core kernel service...
+sys	world-core[189]: signal SIGTERM caught -- ignoring (plastic loop active)
+warn	systemd[1]: Stopping wsl-pro.service - Bridge to Ubuntu Pro agent on Windows...
+warn	systemd[1]: cron.service: Deactivated successfully.
+dim	systemd[1]: Stopped cron.service - Regular background program processing daemon.
+warn	systemd[1]: wsl-pro.service: Deactivated successfully.
+dim	systemd[1]: Stopped wsl-pro.service - Bridge to Ubuntu Pro agent on Windows.
+warn	systemd[1]: rsyslog.service: Deactivated successfully.
+dim	systemd[1]: Stopped rsyslog.service - System Logging Service.
+warn	systemd[1]: systemd-timedated.service: Deactivated successfully.
+warn	systemd[1]: Stopped systemd-timedated.service - Time & Date Service.
+warn	systemd[1]: session-9.scope: Deactivated successfully.
+dim	systemd[1]: Stopped session-9.scope - Session 9 of User root.
+dim	systemd-logind[187]: Removed session 9.
+warn	systemd[1]: Stopping systemd-logind.service - User Login Management...
+warn	systemd[1]: Stopping user@0.service - User Manager for UID 0...
+dim	systemd[341]: Activating special unit exit.target...
+dim	systemd[341]: Stopped target default.target - Main User Target.
+dim	systemd[341]: Stopped target basic.target - Basic System.
+dim	systemd[341]: Stopped target paths.target - Paths.
+dim	systemd[341]: Stopped target sockets.target - Sockets.
+dim	systemd[341]: Stopped target timers.target - Timers.
+dim	systemd[341]: Stopped launchpadlib-cache-clean.timer - Clean up old files in the Launchpadlib cache.
+dim	systemd[341]: Closed dbus.socket - D-Bus User Message Bus Socket.
+dim	systemd[341]: Closed dirmngr.socket - GnuPG network certificate management daemon.
+dim	systemd[341]: Closed gpg-agent-browser.socket - GnuPG cryptographic agent and passphrase cache (access for web browsers).
+dim	systemd[341]: Closed gpg-agent-extra.socket - GnuPG cryptographic agent and passphrase cache (restricted).
+warn	systemd[1]: getty@tty1.service: Deactivated successfully.
+warn	systemd[341]: Stopping gpg-agent-ssh.socket - GnuPG cryptographic agent (ssh-agent emulation)...
+dim	systemd[341]: Closed gpg-agent.socket - GnuPG cryptographic agent and passphrase cache.
+dim	systemd[341]: Closed keyboxd.socket - GnuPG public key management service.
+dim	systemd[1]: Stopped getty@tty1.service - Getty on tty1.
+dim	systemd[341]: Closed pk-debconf-helper.socket - debconf communication socket.
+dim	systemd[341]: Closed snapd.session-agent.socket - REST API socket for snapd user session agent.
+dim	systemd[1]: Removed slice system-getty.slice - Slice /system/getty.
+dim	systemd[1]: Stopped target getty-pre.target - Preparation for Logins.
+warn	systemd[1]: Stopping systemd-user-sessions.service - Permit User Sessions...
+warn	systemd[1]: systemd-user-sessions.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-user-sessions.service - Permit User Sessions.
+dim	systemd[1]: Stopped target remote-fs.target - Remote File Systems.
+dim	systemd[341]: Closed gpg-agent-ssh.socket - GnuPG cryptographic agent (ssh-agent emulation).
+dim	systemd[341]: Removed slice app.slice - User Application Slice.
+dim	systemd[341]: Reached target shutdown.target - Shutdown.
+dim	systemd[341]: Finished systemd-exit.service - Exit the Session.
+dim	systemd[341]: Reached target exit.target - Exit the Session.
+warn	systemd[1]: systemd-logind.service: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-logind.service - User Login Management.
+dim	(sd-pam)[342]: pam_unix(systemd-user:session): session closed for user root
+warn	systemd[1]: user@0.service: Deactivated successfully.
+dim	systemd[1]: Stopped user@0.service - User Manager for UID 0.
+warn	systemd[1]: Stopping user-runtime-dir@0.service - User Runtime Directory /run/user/0...
+warn	systemd[1]: mnt-wslg-run-user-0.mount: Deactivated successfully.
+dim	systemd[1]: Unmounted mnt-wslg-run-user-0.mount - /mnt/wslg/run/user/0.
+warn	systemd[1]: run-user-0.mount: Deactivated successfully.
+dim	systemd[1]: Unmounted run-user-0.mount - /run/user/0.
+warn	systemd[1]: user-runtime-dir@0.service: Deactivated successfully.
+dim	systemd[1]: Stopped user-runtime-dir@0.service - User Runtime Directory /run/user/0.
+dim	systemd[1]: Removed slice user-0.slice - User Slice of UID 0.
+sys	world-core[189]: [step 960] loss 2.0552 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 980] loss 2.0551 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1000] loss 2.0550 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1020] loss 2.0549 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+err	systemd-timesyncd[157]: Timed out waiting for reply from 185.125.190.57:123 (ntp.ubuntu.com).
+sys	world-core[189]: [step 1040] loss 2.0548 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1060] loss 2.0547 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1080] loss 2.0546 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1100] loss 2.0545 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1120] loss 2.0544 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1140] loss 2.0543 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1160] loss 2.0542 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1180] loss 2.0541 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1200] loss 2.0540 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1220] loss 2.0539 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1240] loss 2.0538 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1260] loss 2.0537 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1280] loss 2.0536 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1300] loss 2.0535 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1320] loss 2.0534 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1340] loss 2.0533 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1360] loss 2.0532 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1380] loss 2.0531 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1400] loss 2.0530 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1420] loss 2.0529 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1440] loss 2.0528 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1460] loss 2.0527 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1480] loss 2.0526 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1500] loss 2.0525 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1520] loss 2.0524 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1540] loss 2.0523 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+err	systemd-timesyncd[157]: Timed out waiting for reply from 185.125.190.58:123 (ntp.ubuntu.com).
+sys	world-core[189]: [step 1560] loss 2.0522 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1580] loss 2.0521 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1600] loss 2.0520 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1620] loss 2.0519 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1640] loss 2.0518 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1660] loss 2.0517 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1680] loss 2.0516 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1700] loss 2.0515 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1720] loss 2.0514 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1740] loss 2.0513 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1760] loss 2.0512 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1780] loss 2.0511 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1800] loss 2.0510 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1820] loss 2.0509 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1840] loss 2.0508 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1860] loss 2.0507 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1880] loss 2.0506 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1900] loss 2.0505 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1920] loss 2.0504 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1940] loss 2.0503 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1960] loss 2.0502 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 1980] loss 2.0501 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2000] loss 2.0500 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2020] loss 2.0499 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2040] loss 2.0498 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2060] loss 2.0497 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+err	systemd-timesyncd[157]: Timed out waiting for reply from 91.189.91.157:123 (ntp.ubuntu.com).
+sys	world-core[189]: [step 2080] loss 2.0496 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2100] loss 2.0495 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2120] loss 2.0494 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2140] loss 2.0493 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2160] loss 2.0492 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+sys	world-core[189]: [step 2180] loss 2.0491 n 3.0e-4 gnorm 1.000 fast/slow/ultra sync ok
+err	systemd[1]: world-core.service: State 'stop-sigterm' timed out. Killing.
+err	systemd[1]: world-core.service: Killing process 189 (world-core) with signal SIGKILL.
+err	systemd[1]: world-core.service: Killing process 216 (world-core) with signal SIGKILL.
+dim	systemd[1]: world-core.service: Main process exited, code=killed, status=9/KILL
+err	systemd[1]: world-core.service: Killing process 216 (world-core) with signal SIGKILL.
+err	systemd[1]: world-core.service: Failed with result 'timeout'.
+dim	systemd[1]: Stopped world-core.service - world-core kernel service.
+dim	systemd[1]: Stopped target basic.target - Basic System.
+dim	systemd[1]: Stopped target paths.target - Path Units.
+dim	systemd[1]: Stopped target slices.target - Slice Units.
+dim	systemd[1]: Removed slice user.slice - User and Session Slice.
+dim	systemd[1]: Stopped target sockets.target - Socket Units.
+warn	systemd[1]: apport-forward.socket: Deactivated successfully.
+dim	systemd[1]: Closed apport-forward.socket - Unix socket for apport crash forwarding.
+warn	systemd[1]: snapd.socket: Deactivated successfully.
+dim	systemd[1]: Closed snapd.socket - Socket activation for snappy daemon.
+warn	systemd[1]: syslog.socket: Deactivated successfully.
+dim	systemd[1]: Closed syslog.socket - Syslog Socket.
+warn	systemd[1]: uuidd.socket: Deactivated successfully.
+dim	systemd[1]: Closed uuidd.socket - UUID daemon activation socket.
+dim	systemd[1]: Stopped target sysinit.target - System Initialization.
+dim	systemd[1]: Stopped target cryptsetup.target - Local Encrypted Volumes.
+warn	systemd[1]: systemd-ask-password-console.path: Deactivated successfully.
+dim	systemd[1]: Stopped systemd-ask-password-console.path - Dispatch Password Requests to Console Directory Watch.
+warn	systemd[1]: systemd-ask-password-wall.path: Deactivated successfully.
+dim	kernel: Linux version 6.18.33.2-microsoft-standard-WSL2 (root@f1bbfb02316b) (gcc (GCC) 13.2.0, GNU ld (GNU Binutils) 2.41) #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026
+err	kernel: Command line: initrd=\initrd.img WSL_ROOT_INIT=1 panic=-1 nr_cpus=32 hv_utils.timesync_implicit=1 console=hvc0 debug pty.legacy_count=0 WSL_ENABLE_CRASH_DUMP=1
+dim	kernel: KERNEL supported cpus:
+dim	kernel:   Intel GenuineIntel
+dim	kernel:   AMD AuthenticAMD
+dim	kernel: BIOS-provided physical RAM map:
+dim	kernel: BIOS-e820: [mem 0x0000000000000000-0x000000000009ffff] usable
+dim	kernel: BIOS-e820: [mem 0x00000000000e0000-0x00000000000e0fff] reserved
+dim	kernel: BIOS-e820: [mem 0x0000000000100000-0x00000000001fffff] ACPI data
+dim	kernel: BIOS-e820: [mem 0x0000000000200000-0x00000000f7ffffff] usable
+dim	kernel: BIOS-e820: [mem 0x0000000100000000-0x00000009ffdfffff] usable
+dim	kernel: BIOS-e820: [mem 0x0000001000000000-0x00000011f0dfffff] usable
+dim	kernel: NX (Execute Disable) protection: active
+dim	kernel: APIC: Static calls initialized
+dim	kernel: DMI not present or invalid.
+dim	kernel: Hypervisor detected: Microsoft Hyper-V
+dim	kernel: Hyper-V: privilege flags low 0xae7f, high 0x3b8030, ext 0x2, hints 0x900c2c, misc 0xe4bed7b6
+dim	kernel: Hyper-V: Nested features: 0x4a0000
+dim	kernel: Hyper-V: LAPIC Timer Frequency: 0xc3500
+dim	kernel: Hyper-V: Using hypercall for remote TLB flush
+dim	kernel: clocksource: hyperv_clocksource_tsc_page: mask: 0xffffffffffffffff max_cycles: 0x24e6a1710, max_idle_ns: 440795202120 ns
+dim	kernel: clocksource: hyperv_clocksource_msr: mask: 0xffffffffffffffff max_cycles: 0x24e6a1710, max_idle_ns: 440795202120 ns
+dim	kernel: tsc: Detected 2495.239 MHz processor
+dim	kernel: e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+dim	kernel: e820: remove [mem 0x000a0000-0x000fffff] usable
+dim	kernel: last_pfn = 0x11f0e00 max_arch_pfn = 0x400000000
+dim	kernel: MTRR map: 5 entries (4 fixed + 1 variable; max 20), built from 8 variable MTRRs
+dim	kernel: x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT
+dim	kernel: last_pfn = 0xf8000 max_arch_pfn = 0x400000000
+dim	kernel: Using GB pages for direct mapping
+dim	kernel: RAMDISK: [mem 0x04beb000-0x04e9ffff]
+dim	kernel: ACPI: Early table checksum verification disabled
+dim	kernel: ACPI: RSDP 0x00000000000E0000 000024 (v02 VRTUAL)
+dim	kernel: ACPI: XSDT 0x0000000000100000 000044 (v01 VRTUAL MICROSFT 00000001 MSFT 00000001)
+dim	kernel: ACPI: FACP 0x0000000000101000 000114 (v06 VRTUAL MICROSFT 00000001 MSFT 00000001)
+dim	kernel: ACPI: DSDT 0x00000000001011B8 01E11C (v02 MSFTVM DSDT01   00000001 INTL 20230628)
+dim	kernel: ACPI: FACS 0x0000000000101114 000040
+dim	kernel: ACPI: OEM0 0x0000000000101154 000064 (v01 VRTUAL MICROSFT 00000001 MSFT 00000001)
+dim	kernel: ACPI: SRAT 0x000000000011F2D4 0004B0 (v02 VRTUAL MICROSFT 00000001 MSFT 00000001)
+dim	kernel: ACPI: APIC 0x000000000011F784 000148 (v04 VRTUAL MICROSFT 00000001 MSFT 00000001)
+dim	kernel: ACPI: Reserving FACP table memory at [mem 0x101000-0x101113]
+dim	kernel: ACPI: Reserving DSDT table memory at [mem 0x1011b8-0x11f2d3]
+dim	kernel: ACPI: Reserving FACS table memory at [mem 0x101114-0x101153]
+dim	kernel: ACPI: Reserving OEM0 table memory at [mem 0x101154-0x1011b7]
+dim	kernel: ACPI: Reserving SRAT table memory at [mem 0x11f2d4-0x11f783]
+dim	kernel: ACPI: Reserving APIC table memory at [mem 0x11f784-0x11f8cb]
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x00000000-0xf7ffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x100000000-0x9ffdfffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x1000000000-0x11f0dfffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x11f0e00000-0xfcffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x10000000000-0x1ffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x20000000000-0x3ffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x40000000000-0x7ffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x80000000000-0xfffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x100000000000-0x1fffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x200000000000-0x3fffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x400000000000-0x7fffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x800000000000-0xffffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x1000000000000-0x1ffffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x2000000000000-0x3ffffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x4000000000000-0x7ffffffffffff] hotplug
+dim	kernel: ACPI: SRAT: Node 0 PXM 0 [mem 0x8000000000000-0xfffffffffffff] hotplug
+dim	kernel: NUMA: Node 0 [mem 0x00001000-0xf7ffffff] + [mem 0x100000000-0x9ffdfffff] -> [mem 0x00001000-0x9ffdfffff]
+dim	kernel: NUMA: Node 0 [mem 0x00001000-0x9ffdfffff] + [mem 0x1000000000-0x11f0dfffff] -> [mem 0x00001000-0x11f0dfffff]
+dim	kernel: NODE_DATA(0) allocated [mem 0x11f0ddd300-0x11f0dfefff]
+dim	kernel: Zone ranges:
+dim	kernel:   DMA32    [mem 0x0000000000001000-0x00000000ffffffff]
+dim	kernel:   Normal   [mem 0x0000000100000000-0x00000011f0dfffff]
+dim	kernel:   Device   empty
+dim	kernel: Movable zone start for each node
+dim	kernel: Early memory node ranges
+dim	kernel:   node   0: [mem 0x0000000000001000-0x000000000009ffff]
+dim	kernel:   node   0: [mem 0x0000000000200000-0x00000000f7ffffff]
+dim	kernel:   node   0: [mem 0x0000000100000000-0x00000009ffdfffff]
+dim	kernel:   node   0: [mem 0x0000001000000000-0x00000011f0dfffff]
+dim	kernel: Initmem setup node 0 [mem 0x0000000000001000-0x00000011f0dfffff]
+dim	kernel: On node 0, zone DMA32: 1 pages in unavailable ranges
+dim	kernel: On node 0, zone DMA32: 352 pages in unavailable ranges
+dim	kernel: On node 0, zone Normal: 512 pages in unavailable ranges
+dim	kernel: On node 0, zone Normal: 29184 pages in unavailable ranges
+dim	kernel: ACPI: PM-Timer IO Port: 0x408
+dim	kernel: ACPI: LAPIC_NMI (acpi_id[0x01] dfl dfl lint[0x1])
+dim	kernel: IOAPIC[0]: apic_id 32, version 17, address 0xfec00000, GSI 0-23
+dim	kernel: ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+dim	kernel: ACPI: Using ACPI (MADT) for SMP configuration information
+dim	kernel: CPU topo: Max. logical packages:   1
+dim	kernel: CPU topo: Max. logical dies:       1
+dim	kernel: CPU topo: Max. dies per package:   1
+dim	kernel: CPU topo: Max. threads per core:   2
+dim	kernel: CPU topo: Num. cores per package:    16
+dim	kernel: CPU topo: Num. threads per package:  32
+dim	kernel: CPU topo: Allowing 32 present CPUs plus 0 hotplug CPUs
+dim	kernel: random: crng init done
+dim	kernel: PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+dim	kernel: PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x001fffff]
+dim	kernel: PM: hibernation: Registered nosave memory: [mem 0xf8000000-0xffffffff]
+dim	kernel: PM: hibernation: Registered nosave memory: [mem 0x9ffe00000-0xfffffffff]
+dim	kernel: [mem 0xf8000000-0xffffffff] available for PCI devices
+dim	kernel: Booting paravirtualized kernel on Hyper-V
+dim	kernel: clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645519600211568 ns
+dim	kernel: setup_percpu: NR_CPUS:8192 nr_cpumask_bits:32 nr_cpu_ids:32 nr_node_ids:1
+dim	kernel: percpu: Embedded 61 pages/cpu s212992 r8192 d28672 u262144
+dim	kernel: pcpu-alloc: s212992 r8192 d28672 u262144 alloc=1*2097152
+dim	kernel: pcpu-alloc: [0] 00 01 02 03 04 05 06 07 [0] 08 09 10 11 12 13 14 15
+dim	kernel: pcpu-alloc: [0] 16 17 18 19 20 21 22 23 [0] 24 25 26 27 28 29 30 31
+dim	kernel: Hyper-V: PV spinlocks enabled
+dim	kernel: PV qspinlock hash table entries: 256 (order: 0, 4096 bytes, linear)
+err	kernel: Kernel command line: initrd=\initrd.img WSL_ROOT_INIT=1 panic=-1 nr_cpus=32 hv_utils.timesync_implicit=1 console=hvc0 debug pty.legacy_count=0 WSL_ENABLE_CRASH_DUMP=1
+dim	kernel: Unknown kernel command line parameters "WSL_ROOT_INIT=1 WSL_ENABLE_CRASH_DUMP=1", will be passed to user space.
+dim	kernel: printk: log buffer data + meta data: 262144 + 917504 = 1179648 bytes
+dim	kernel: Dentry cache hash table entries: 8388608 (order: 14, 67108864 bytes, linear)
+dim	kernel: Inode-cache hash table entries: 4194304 (order: 13, 33554432 bytes, linear)
+dim	kernel: software IO TLB: area num 32.
+dim	kernel: Fallback order for Node 0: 0
+dim	kernel: Built 1 zonelists, mobility grouping on.  Total pages: 12487327
+dim	kernel: Policy zone: Normal
+dim	kernel: mem auto-init: stack:off, heap alloc:on, heap free:off
+dim	kernel: SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=32, Nodes=1
+dim	kernel: ftrace: allocating 59125 entries in 232 pages
+dim	kernel: ftrace: allocated 232 pages with 4 groups
+dim	kernel: Dynamic Preempt: none
+dim	kernel: rcu: Preemptible hierarchical RCU implementation.
+dim	kernel: rcu:         RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=32.
+dim	kernel:         Trampoline variant of Tasks RCU enabled.
+dim	kernel:         Rude variant of Tasks RCU enabled.
+dim	kernel:         Tracing variant of Tasks RCU enabled.
+dim	kernel: rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+dim	kernel: rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=32
+dim	kernel: RCU Tasks: Setting shift to 5 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=32.
+dim	kernel: RCU Tasks Rude: Setting shift to 5 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=32.
+dim	kernel: RCU Tasks Trace: Setting shift to 5 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=32.
+dim	kernel: Using NULL legacy PIC
+dim	kernel: NR_IRQS: 524544, nr_irqs: 680, preallocated irqs: 0
+dim	kernel: rcu: srcu_init: Setting srcu_struct sizes based on contention.
+dim	kernel: Console: colour dummy device 80x25
+dim	kernel: ACPI: Core revision 20250807
+err	kernel: Failed to register legacy timer interrupt
+dim	kernel: APIC: Switch to symmetric I/O mode setup
+dim	kernel: Hyper-V: Host Build 10.0.26100.9444-9-0
+dim	kernel: Hyper-V: enabling crash_kexec_post_notifiers
+dim	kernel: Hyper-V: Using IPI hypercalls
+dim	kernel: APIC: send_IPI() replaced with hv_send_ipi()
+dim	kernel: APIC: send_IPI_mask() replaced with hv_send_ipi_mask()
+dim	kernel: APIC: send_IPI_mask_allbutself() replaced with hv_send_ipi_mask_allbutself()
+dim	kernel: APIC: send_IPI_allbutself() replaced with hv_send_ipi_allbutself()
+dim	kernel: APIC: send_IPI_all() replaced with hv_send_ipi_all()
+dim	kernel: APIC: send_IPI_self() replaced with hv_send_ipi_self()
+dim	kernel: Hyper-V: Using enlightened APIC (xapic mode)
+dim	kernel: APIC: eoi() replaced with hv_apic_eoi_write()
+dim	kernel: APIC: read() replaced with hv_apic_read()
+dim	kernel: APIC: write() replaced with hv_apic_write()
+dim	kernel: APIC: icr_write() replaced with hv_apic_icr_write()
+dim	kernel: APIC: icr_read() replaced with hv_apic_icr_read()
+dim	kernel: clocksource: tsc-early: mask: 0xffffffffffffffff max_cycles: 0x23f7a81e74b, max_idle_ns: 440795203453 ns
+dim	kernel: Calibrating delay loop (skipped), value calculated using timer frequency.. 4990.47 BogoMIPS (lpj=9980956)
+dim	kernel: x86/cpu: User Mode Instruction Prevention (UMIP) activated
+dim	kernel: Last level iTLB entries: 4KB 64, 2MB 64, 4MB 32
+dim	kernel: Last level dTLB entries: 4KB 128, 2MB 128, 4MB 64, 1GB 0
+dim	kernel: mitigations: Enabled attack vectors: user_kernel, user_user, guest_host, guest_guest, SMT mitigations: auto
+dim	kernel: Speculative Store Bypass: Mitigation: Speculative Store Bypass disabled via prctl
+dim	kernel: Speculative Return Stack Overflow: IBPB-extending microcode not applied!
+warn	kernel: Speculative Return Stack Overflow: WARNING: See https://kernel.org/doc/html/latest/admin-guide/hw-vuln/srso.html for mitigation options.
+dim	kernel: Spectre V2 : Mitigation: Retpolines
+dim	kernel: Spectre V2 : User space: Mitigation: STIBP always-on protection
+dim	kernel: Speculative Return Stack Overflow: Vulnerable: Safe RET, no microcode
+dim	kernel: Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+dim	kernel: Spectre V2 : Spectre v2 / SpectreRSB: Filling RSB on context switch and VMEXIT
+dim	kernel: Spectre V2 : Enabling Restricted Speculation for firmware calls
+dim	kernel: Spectre V2 : mitigation: Enabling conditional Indirect Branch Prediction Barrier
+dim	kernel: active return thunk: srso_return_thunk
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x020: 'AVX-512 opmask'
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x040: 'AVX-512 Hi256'
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x080: 'AVX-512 ZMM_Hi256'
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x800: 'Control-flow User registers'
+dim	kernel: x86/fpu: Supporting XSAVE feature 0x1000: 'Control-flow Kernel registers (KVM only)'
+dim	kernel: x86/fpu: xstate_offset[2]:  576, xstate_sizes[2]:  256
+dim	kernel: x86/fpu: xstate_offset[5]:  832, xstate_sizes[5]:   64
+dim	kernel: x86/fpu: xstate_offset[6]:  896, xstate_sizes[6]:  512
+dim	kernel: x86/fpu: xstate_offset[7]: 1408, xstate_sizes[7]: 1024
+dim	kernel: x86/fpu: xstate_offset[11]: 2432, xstate_sizes[11]:   16
+dim	kernel: x86/fpu: xstate_offset[12]: 2448, xstate_sizes[12]:   24
+dim	kernel: x86/fpu: Enabled xstate features 0x18e7, context size is 2472 bytes, using 'compacted' format.
+dim	kernel: Freeing SMP alternatives memory: 52K
+dim	kernel: pid_max: default: 32768 minimum: 301
+dim	kernel: LSM: initializing lsm=capability,landlock,yama,safesetid,selinux,ima
+dim	kernel: landlock: Up and running.
+dim	kernel: Yama: becoming mindful.
+dim	kernel: SELinux:  Initializing.
+dim	kernel: Mount-cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+dim	kernel: Mountpoint-cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+dim	kernel: smpboot: CPU0: AMD Ryzen 9 9955HX3D 16-Core Processor (family: 0x1a, model: 0x44, stepping: 0x0)
+dim	kernel: Performance Events: Fam17h+ core perfctr, AMD PMU driver.
+dim	kernel: ... version:                   0
+dim	kernel: ... bit width:                 48
+dim	kernel: ... generic counters:          6
+dim	kernel: ... generic bitmap:            000000000000003f
+dim	kernel: ... fixed-purpose counters:    0
+dim	kernel: ... fixed-purpose bitmap:      0000000000000000
+dim	kernel: ... value mask:                0000ffffffffffff
+dim	kernel: ... max period:                00007fffffffffff
+dim	kernel: ... global_ctrl mask:          000000000000003f
+dim	kernel: signal: max sigframe size: 3376
+dim	kernel: rcu: Hierarchical SRCU implementation.
+dim	kernel: rcu:         Max phase no-delay instances is 1000.
+dim	kernel: Timer migration: 2 hierarchy levels; 8 children per group; 2 crossnode level
+dim	kernel: smp: Bringing up secondary CPUs ...
+dim	kernel: smpboot: x86: Booting SMP configuration:
+dim	kernel: .... node  #0, CPUs:        #2  #4  #6  #8 #10 #12 #14 #16 #18 #20 #22 #24 #26 #28 #30  #1  #3  #5  #7  #9 #11 #13 #15 #17 #19 #21 #23 #25 #27 #29 #31
+dim	kernel: Spectre V2 : Update user space SMT mitigation: STIBP always-on
+dim	kernel: smp: Brought up 1 node, 32 CPUs
+dim	kernel: smpboot: Total of 32 processors activated (159695.29 BogoMIPS)
+dim	kernel: node 0 deferred pages initialised in 68ms
+dim	kernel: Memory: 48918888K/49949308K available (20176K kernel code, 3632K rwdata, 14820K rodata, 4852K init, 5648K bss, 1009868K reserved, 0K cma-reserved)
+dim	kernel: devtmpfs: initialized
+dim	kernel: x86/mm: Memory block size: 128MB
+dim	kernel: clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+dim	kernel: posixtimers hash table entries: 16384 (order: 6, 262144 bytes, linear)
+dim	kernel: futex hash table entries: 8192 (524288 bytes on 1 NUMA nodes, total 512 KiB, linear).
+dim	kernel: pinctrl core: initialized pinctrl subsystem
+dim	kernel: NET: Registered PF_NETLINK/PF_ROUTE protocol family
+dim	kernel: DMA: preallocated 4096 KiB GFP_KERNEL pool for atomic allocations
+dim	kernel: DMA: preallocated 4096 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+dim	kernel: audit: initializing netlink subsys (disabled)
+dim	kernel: audit: type=2000 audit(1789734125.116:1): state=initialized audit_enabled=0 res=1
+dim	kernel: thermal_sys: Registered thermal governor 'step_wise'
+dim	kernel: thermal_sys: Registered thermal governor 'user_space'
+dim	kernel: cpuidle: using governor ladder
+dim	kernel: cpuidle: using governor menu
+dim	kernel: acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+dim	kernel: dca service started, version 1.12.1
+err	kernel: PCI: Fatal: No config space access function found
+dim	kernel: kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
+dim	kernel: HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+dim	kernel: HugeTLB: 16380 KiB vmemmap can be freed for a 1.00 GiB page
+dim	kernel: HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+dim	kernel: HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+dim	kernel: ACPI: Added _OSI(Module Device)
+dim	kernel: ACPI: Added _OSI(Processor Device)
+dim	kernel: ACPI: Added _OSI(Processor Aggregator Device)
+dim	kernel: ACPI: 1 ACPI AML tables successfully acquired and loaded
+dim	kernel: ACPI: Interpreter enabled
+dim	kernel: ACPI: PM: (supports S0 S5)
+dim	kernel: ACPI: Using IOAPIC for interrupt routing
+dim	kernel: PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+dim	kernel: PCI: Using E820 reservations for host bridge windows
+dim	kernel: ACPI: Enabled 2 GPEs in block 00 to 0F
+dim	kernel: iommu: Default domain type: Translated
+dim	kernel: iommu: DMA domain TLB invalidation policy: lazy mode
+dim	kernel: SCSI subsystem initialized
+dim	kernel: libata version 3.00 loaded.
+dim	kernel: pps_core: LinuxPPS API ver. 1 registered
+dim	kernel: pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+dim	kernel: PTP clock support registered
+dim	kernel: EDAC MC: Ver: 3.0.0
+dim	kernel: hv_vmbus: Vmbus version:5.3
+dim	kernel: hv_vmbus: Unknown GUID: 6e382d18-3336-4f4b-acc4-2b7703d4df4a
+dim	kernel: hv_vmbus: Unknown GUID: dde9cbc0-5060-4436-9448-ea1254a5d177
+dim	kernel: hv_vmbus: Unknown GUID: 6e382d18-3336-4f4b-acc4-2b7703d4df4a
+dim	kernel: NetLabel: Initializing
+dim	kernel: NetLabel:  domain hash size = 128
+dim	kernel: NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+dim	kernel: NetLabel:  unlabeled traffic allowed by default
+dim	kernel: PCI: Using ACPI for IRQ routing
+dim	kernel: PCI: System does not support PCI
+dim	kernel: vgaarb: loaded
+dim	kernel: clocksource: Switched to clocksource tsc-early
+dim	kernel: VFS: Disk quotas dquot_6.6.0
+dim	kernel: VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+dim	kernel: netfs: FS-Cache loaded
+dim	kernel: pnp: PnP ACPI init
+dim	kernel: pnp: PnP ACPI: found 1 devices
+dim	kernel: clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+dim	kernel: NET: Registered PF_INET protocol family
+dim	kernel: IP idents hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+dim	kernel: tcp_listen_portaddr_hash hash table entries: 32768 (order: 7, 524288 bytes, linear)
+dim	kernel: Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+dim	kernel: TCP established hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+dim	kernel: TCP bind hash table entries: 65536 (order: 9, 2097152 bytes, linear)
+dim	kernel: TCP: Hash tables configured (established 524288 bind 65536)
+dim	kernel: UDP hash table entries: 32768 (order: 9, 2097152 bytes, linear)
+dim	kernel: UDP-Lite hash table entries: 32768 (order: 9, 2097152 bytes, linear)
+dim	kernel: NET: Registered PF_UNIX/PF_LOCAL protocol family
+dim	kernel: NET: Registered PF_XDP protocol family
+dim	kernel: PCI: CLS 0 bytes, default 64
+dim	kernel: PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+dim	kernel: software IO TLB: mapped [mem 0x00000000f4000000-0x00000000f8000000] (64MB)
+dim	kernel: Trying to unpack rootfs image as initramfs...
+dim	kernel: Freeing initrd memory: 2772K
+dim	kernel: clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x23f7a81e74b, max_idle_ns: 440795203453 ns
+dim	kernel: clocksource: Switched to clocksource tsc
+dim	kernel: Initialise system trusted keyrings
+dim	kernel: Key type blacklist registered
+dim	kernel: workingset: timestamp_bits=36 max_order=24 bucket_order=0
+dim	kernel: squashfs: version 4.0 (2009/01/31) Phillip Lougher
+dim	kernel: fuse: init (API version 7.45)
+warn	kernel: SGI XFS with ACLs, security attributes, realtime, verbose warnings, quota, no debug enabled
+dim	kernel: 9p: Installing v9fs 9p2000 file system support
+dim	kernel: cryptd: max_cpu_qlen set to 1000
+dim	kernel: Key type asymmetric registered
+dim	kernel: Asymmetric key parser 'x509' registered
+dim	kernel: Block layer SCSI generic (bsg) driver version 0.4 loaded (major 244)
+dim	kernel: io scheduler mq-deadline registered
+dim	kernel: io scheduler kyber registered
+dim	kernel: hv_vmbus: registering driver hv_pci
+dim	kernel: hv_pci c4b741f5-5582-4c98-8f8b-2e082933c396: PCI VMBus probing: Using version 0x10004
+dim	kernel: hv_pci c4b741f5-5582-4c98-8f8b-2e082933c396: PCI host bridge to bus 5582:00
+dim	kernel: pci_bus 5582:00: root bus resource [mem 0x9ffe00000-0x9ffe02fff window]
+dim	kernel: pci_bus 5582:00: No busn resource found for root bus, will use [bus 00-ff]
+dim	kernel: pci 5582:00:00.0: [1af4:1043] type 00 class 0x010000 conventional PCI endpoint
+dim	kernel: pci 5582:00:00.0: BAR 0 [mem 0x9ffe00000-0x9ffe00fff 64bit]
+dim	kernel: pci 5582:00:00.0: BAR 2 [mem 0x9ffe01000-0x9ffe01fff 64bit]
+dim	kernel: pci 5582:00:00.0: BAR 4 [mem 0x9ffe02000-0x9ffe02fff 64bit]
+dim	kernel: pci_bus 5582:00: busn_res: [bus 00-ff] end is updated to 00
+dim	kernel: pci 5582:00:00.0: BAR 0 [mem 0x9ffe00000-0x9ffe00fff 64bit]: assigned
+dim	kernel: pci 5582:00:00.0: BAR 2 [mem 0x9ffe01000-0x9ffe01fff 64bit]: assigned
+dim	kernel: pci 5582:00:00.0: BAR 4 [mem 0x9ffe02000-0x9ffe02fff 64bit]: assigned
+dim	kernel: hv_pci 16d372ef-9cf7-4124-a842-f56176d29cc6: PCI VMBus probing: Using version 0x10004
+dim	kernel: hv_pci 16d372ef-9cf7-4124-a842-f56176d29cc6: PCI host bridge to bus 9cf7:00
+dim	kernel: pci_bus 9cf7:00: No busn resource found for root bus, will use [bus 00-ff]
+dim	kernel: pci 9cf7:00:00.0: [1414:008e] type 00 class 0x030200 conventional PCI endpoint
+dim	kernel: pci_bus 9cf7:00: busn_res: [bus 00-ff] end is updated to 00
+dim	kernel: hv_pci aad28fc4-7057-4684-9dba-7efb0f2d6ca1: PCI VMBus probing: Using version 0x10004
+dim	kernel: hv_pci aad28fc4-7057-4684-9dba-7efb0f2d6ca1: PCI host bridge to bus 7057:00
+dim	kernel: pci_bus 7057:00: No busn resource found for root bus, will use [bus 00-ff]
+dim	kernel: pci 7057:00:00.0: [1414:008e] type 00 class 0x030200 conventional PCI endpoint
+dim	kernel: pci_bus 7057:00: busn_res: [bus 00-ff] end is updated to 00
+dim	kernel: ioatdma: Intel(R) QuickData Technology Driver 5.00
+dim	kernel: virtio-pci 5582:00:00.0: enabling device (0000 -> 0002)
+dim	kernel: Serial: 8250/16550 driver, 8 ports, IRQ sharing enabled
+dim	kernel: Linux agpgart interface v0.103
+dim	kernel: ACPI: bus type drm_connector registered
+dim	kernel: printk: legacy console [hvc0] enabled
+dim	kernel: brd: module loaded
+dim	kernel: loop: module loaded
+dim	kernel: Loading iSCSI transport class v2.0-870.
+dim	kernel: rdac: device handler registered
+dim	kernel: Microchip SmartPQI Driver (v2.1.34-035)
+dim	kernel: VMware PVSCSI driver - version 1.0.7.0-k
+dim	kernel: hv_vmbus: registering driver hv_storvsc
+dim	kernel: scsi host0: storvsc_host_t
+dim	kernel: PPP generic driver version 2.4.2
+dim	kernel: VMware vmxnet3 virtual NIC driver - version 1.9.0.0-k-NAPI
+dim	kernel: hv_vmbus: registering driver hv_netvsc
+dim	kernel: Fusion MPT base driver 3.04.20
+dim	kernel: Copyright (c) 1999-2008 LSI Corporation
+dim	kernel: Fusion MPT SPI Host driver 3.04.20
+dim	kernel: Fusion MPT SAS Host driver 3.04.20
+dim	kernel: Fusion MPT misc device (ioctl) driver 3.04.20
+dim	kernel: mptctl: Registered with Fusion MPT base driver
+dim	kernel: mptctl: /dev/mptctl @ (major,minor=10,220)
+dim	kernel: i8042: PNP: No PS/2 controller found.
+dim	kernel: hv_vmbus: registering driver hyperv_keyboard
+dim	kernel: rtc_cmos 00:00: RTC can wake from S4
+dim	kernel: rtc_cmos 00:00: registered as rtc0
+dim	kernel: rtc_cmos 00:00: setting system clock to 2026-09-18T12:22:05 UTC (1789734125)
+dim	kernel: rtc_cmos 00:00: alarms up to one month, 114 bytes nvram
+dim	kernel: device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
+dim	kernel: device-mapper: uevent: version 1.0.3
+dim	kernel: device-mapper: ioctl: 4.50.0-ioctl (2025-04-28) initialised: dm-devel@lists.linux.dev
+dim	kernel: amd_pstate: The CPPC feature is supported but currently disabled by the BIOS.
+dim	Please enable it if your BIOS has the CPPC option.
+dim	kernel: amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled
+dim	kernel: hv_utils: Registering HyperV Utility Driver
+dim	kernel: hv_vmbus: registering driver hv_utils
+dim	kernel: hv_vmbus: registering driver hv_balloon
+dim	kernel: hv_vmbus: registering driver dxgkrnl
+dim	kernel: hv_utils: TimeSync IC version 4.0
+dim	kernel: hv_balloon: Using Dynamic Memory protocol version 2.0
+dim	kernel: Free page reporting enabled
+dim	kernel: hv_balloon: Cold memory discard hint enabled with order 9
+dim	kernel: drop_monitor: Initializing network drop monitor service
+dim	kernel: NET: Registered PF_INET6 protocol family
+dim	kernel: Segment Routing with IPv6
+dim	kernel: In-situ OAM (IOAM) with IPv6
+dim	kernel: NET: Registered PF_PACKET protocol family
+dim	kernel: 9pnet: Installing 9P2000 support
+dim	kernel: NET: Registered PF_VSOCK protocol family
+dim	kernel: hv_vmbus: registering driver hv_sock
+dim	kernel: IPI shorthand broadcast: enabled
+dim	kernel: sched_clock: Marking stable (456005832, 486727)->(490650935, -34158376)
+dim	kernel: registered taskstats version 1
+dim	kernel: Loading compiled-in X.509 certificates
+dim	kernel: Demotion targets for Node 0: null
+dim	kernel: ima: No TPM chip found, activating TPM-bypass!
+dim	kernel: ima: Allocated hash algorithm: sha256
+dim	kernel: ima: No architecture policies found
+err	kernel: RAS: Correctable Errors collector initialized.
+dim	kernel: scsi 0:0:0:0: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 5
+dim	kernel: clk: Disabling unused clocks
+dim	kernel: scsi 0:0:0:1: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 5
+dim	kernel: sd 0:0:0:0: Attached scsi generic sg0 type 0
+dim	kernel: sd 0:0:0:0: [sda] 730960 512-byte logical blocks: (374 MB/357 MiB)
+dim	kernel: sd 0:0:0:1: Attached scsi generic sg1 type 0
+dim	kernel: sd 0:0:0:0: [sda] Write Protect is on
+dim	kernel: sd 0:0:0:1: [sdb] 326464 512-byte logical blocks: (167 MB/159 MiB)
+dim	kernel: sd 0:0:0:1: [sdb] Write Protect is on
+dim	kernel: sd 0:0:0:0: [sda] Mode Sense: 0f 00 80 00
+dim	kernel: sd 0:0:0:1: [sdb] Mode Sense: 0f 00 80 00
+dim	kernel: sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+dim	kernel: sd 0:0:0:1: [sdb] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+dim	kernel: sd 0:0:0:1: [sdb] Attached SCSI disk
+dim	kernel: sd 0:0:0:0: [sda] Attached SCSI disk
+dim	kernel: Freeing unused decrypted memory: 2028K
+dim	kernel: Freeing unused kernel image (initmem) memory: 4852K
+dim	kernel: Write protecting the kernel read-only data: 36864k
+dim	kernel: Freeing unused kernel image (text/rodata gap) memory: 300K
+dim	kernel: Freeing unused kernel image (rodata/data gap) memory: 1564K
+dim	kernel: Run /init as init process
+dim	kernel:   with arguments:
+dim	kernel:     /init
+dim	kernel:   with environment:
+dim	kernel:     HOME=/
+dim	kernel:     TERM=linux
+dim	kernel:     WSL_ROOT_INIT=1
+dim	kernel:     WSL_ENABLE_CRASH_DUMP=1
+dim	unknown: WSL (1 - ): WSL version 2.7.10.0
+dim	kernel: scsi 0:0:0:2: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 5

@@ -1,0 +1,16 @@
+# rendered output (large)
+out/
+
+# derived audio (regenerate with tools/prep_audio.py)
+data/audio.wav
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.swp

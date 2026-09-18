@@ -1,0 +1,537 @@
+{
+ "meta": {
+  "ar": "Mili",
+  "ti": "world.execute(me);",
+  "al": "Miracle Milk",
+  "length": "03:31.984",
+  "re": "Codex local audio-verified timeline",
+  "ve": "1.0",
+  "offset": "0"
+ },
+ "lines": [
+  {
+   "t": 0.0,
+   "text": "(pre-roll)"
+  },
+  {
+   "t": 0.1,
+   "text": "Switch on the power line"
+  },
+  {
+   "t": 1.74,
+   "text": "Remember to put on"
+  },
+  {
+   "t": 2.92,
+   "text": "PROTECTION"
+  },
+  {
+   "t": 3.873,
+   "text": "Lay down your pieces"
+  },
+  {
+   "t": 5.491,
+   "text": "And let's begin"
+  },
+  {
+   "t": 6.38,
+   "text": "OBJECT CREATION"
+  },
+  {
+   "t": 7.446,
+   "text": "Fill in my data parameters"
+  },
+  {
+   "t": 10.091,
+   "text": "INITIALIZATION"
+  },
+  {
+   "t": 11.095,
+   "text": "Set up our new world"
+  },
+  {
+   "t": 12.906,
+   "text": "And let's begin the"
+  },
+  {
+   "t": 13.891,
+   "text": "SIMULATION"
+  },
+  {
+   "t": 16.0,
+   "text": "(instrumental — world boot)"
+  },
+  {
+   "t": 29.709,
+   "text": "If I'm a set of points"
+  },
+  {
+   "t": 31.116,
+   "text": "Then I will give you my"
+  },
+  {
+   "t": 32.682,
+   "text": "DIMENSION"
+  },
+  {
+   "t": 33.412,
+   "text": "If I'm a circle"
+  },
+  {
+   "t": 34.646,
+   "text": "Then I will give you my"
+  },
+  {
+   "t": 36.287,
+   "text": "CIRCUMFERENCE"
+  },
+  {
+   "t": 37.067,
+   "text": "If I'm a sine wave"
+  },
+  {
+   "t": 38.596,
+   "text": "Then you can sit on all my"
+  },
+  {
+   "t": 40.049,
+   "text": "TANGENTS"
+  },
+  {
+   "t": 40.706,
+   "text": "If I approach infinity"
+  },
+  {
+   "t": 42.346,
+   "text": "Then you can be my"
+  },
+  {
+   "t": 43.507,
+   "text": "LIMITATIONS"
+  },
+  {
+   "t": 44.452,
+   "text": "Switch my current"
+  },
+  {
+   "t": 45.85,
+   "text": "To AC, to DC"
+  },
+  {
+   "t": 47.672,
+   "text": "And then blind my vision"
+  },
+  {
+   "t": 49.534,
+   "text": "So dizzy, so dizzy"
+  },
+  {
+   "t": 51.363,
+   "text": "Oh, we can travel"
+  },
+  {
+   "t": 53.225,
+   "text": "To A.D., to B.C."
+  },
+  {
+   "t": 55.083,
+   "text": "And we can unite"
+  },
+  {
+   "t": 56.916,
+   "text": "So deeply, so deeply"
+  },
+  {
+   "t": 59.223,
+   "text": "If I can"
+  },
+  {
+   "t": 59.687,
+   "text": "If I can give you all the"
+  },
+  {
+   "t": 61.958,
+   "text": "STIMULATIONS"
+  },
+  {
+   "t": 62.589,
+   "text": "Then I can"
+  },
+  {
+   "t": 63.535,
+   "text": "Then I can be your only"
+  },
+  {
+   "t": 65.397,
+   "text": "SATISFACTION"
+  },
+  {
+   "t": 66.601,
+   "text": "If I can make you happy"
+  },
+  {
+   "t": 68.252,
+   "text": "I will run the"
+  },
+  {
+   "t": 69.259,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 70.084,
+   "text": "Though we are trapped"
+  },
+  {
+   "t": 71.764,
+   "text": "In this strange, strange"
+  },
+  {
+   "t": 73.169,
+   "text": "SIMULATION"
+  },
+  {
+   "t": 74.045,
+   "text": "If I'm an eggplant"
+  },
+  {
+   "t": 75.422,
+   "text": "Then I will give you my"
+  },
+  {
+   "t": 76.959,
+   "text": "NUTRIENTS"
+  },
+  {
+   "t": 77.576,
+   "text": "If I'm a tomato"
+  },
+  {
+   "t": 79.226,
+   "text": "Then I will give you"
+  },
+  {
+   "t": 80.62,
+   "text": "ANTIOXIDANTS"
+  },
+  {
+   "t": 81.351,
+   "text": "If I'm a tabby cat"
+  },
+  {
+   "t": 82.833,
+   "text": "Then I will purr for your"
+  },
+  {
+   "t": 84.268,
+   "text": "ENJOYMENT"
+  },
+  {
+   "t": 85.078,
+   "text": "If I'm the only God"
+  },
+  {
+   "t": 86.538,
+   "text": "Then you're the proof of my"
+  },
+  {
+   "t": 87.922,
+   "text": "EXISTENCE"
+  },
+  {
+   "t": 88.587,
+   "text": "Switch my gender"
+  },
+  {
+   "t": 90.197,
+   "text": "To F, to M"
+  },
+  {
+   "t": 92.015,
+   "text": "And then do whatever"
+  },
+  {
+   "t": 93.953,
+   "text": "From A.M. to P.M."
+  },
+  {
+   "t": 95.465,
+   "text": "Oh, switch my role"
+  },
+  {
+   "t": 97.739,
+   "text": "To S, to M"
+  },
+  {
+   "t": 99.349,
+   "text": "So we can enter"
+  },
+  {
+   "t": 101.474,
+   "text": "The trance, the trance"
+  },
+  {
+   "t": 103.489,
+   "text": "If I can"
+  },
+  {
+   "t": 104.197,
+   "text": "If I can feel your"
+  },
+  {
+   "t": 106.293,
+   "text": "VIBRATIONS"
+  },
+  {
+   "t": 107.22,
+   "text": "Then I can"
+  },
+  {
+   "t": 107.903,
+   "text": "Then I can finally be"
+  },
+  {
+   "t": 110.221,
+   "text": "COMPLETION"
+  },
+  {
+   "t": 110.9,
+   "text": "Though you have left"
+  },
+  {
+   "t": 112.22,
+   "text": "You have left"
+  },
+  {
+   "t": 113.1,
+   "text": "You have left"
+  },
+  {
+   "t": 114.18,
+   "text": "You have left"
+  },
+  {
+   "t": 114.92,
+   "text": "You have left"
+  },
+  {
+   "t": 115.78,
+   "text": "You have left me in"
+  },
+  {
+   "t": 117.274,
+   "text": "ISOLATION"
+  },
+  {
+   "t": 118.333,
+   "text": "If I can"
+  },
+  {
+   "t": 118.979,
+   "text": "If I can erase all the pointless"
+  },
+  {
+   "t": 120.86,
+   "text": "FRAGMENTS"
+  },
+  {
+   "t": 121.728,
+   "text": "Then maybe"
+  },
+  {
+   "t": 122.714,
+   "text": "Then maybe you won't leave me so"
+  },
+  {
+   "t": 124.89,
+   "text": "DISHEARTENED"
+  },
+  {
+   "t": 125.708,
+   "text": "Challenging your God"
+  },
+  {
+   "t": 128.661,
+   "text": "You have made some"
+  },
+  {
+   "t": 131.224,
+   "text": "ILLEGAL ARGUMENTS"
+  },
+  {
+   "t": 134.38,
+   "text": "(instrumental — argument stack)"
+  },
+  {
+   "t": 147.66,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 148.6,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 149.52,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 150.54,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 151.52,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 152.28,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 153.16,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 153.98,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 155.2,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 156.08,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 157.04,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 158.0,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 158.9,
+   "text": "Ein, dos"
+  },
+  {
+   "t": 159.657,
+   "text": "Trois, ne"
+  },
+  {
+   "t": 160.693,
+   "text": "Fem, liù"
+  },
+  {
+   "t": 161.584,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 162.632,
+   "text": "If I can"
+  },
+  {
+   "t": 163.315,
+   "text": "If I can give them all the"
+  },
+  {
+   "t": 165.166,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 166.016,
+   "text": "Then I can"
+  },
+  {
+   "t": 167.022,
+   "text": "Then I can be your only"
+  },
+  {
+   "t": 168.911,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 169.824,
+   "text": "If I can have you back"
+  },
+  {
+   "t": 171.868,
+   "text": "I will run the"
+  },
+  {
+   "t": 172.712,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 173.643,
+   "text": "Though we are trapped"
+  },
+  {
+   "t": 174.975,
+   "text": "We are trapped, ah"
+  },
+  {
+   "t": 177.246,
+   "text": "I've studied"
+  },
+  {
+   "t": 178.173,
+   "text": "I've studied how to properly"
+  },
+  {
+   "t": 179.929,
+   "text": "LO-O-OVE"
+  },
+  {
+   "t": 180.857,
+   "text": "Question me"
+  },
+  {
+   "t": 181.901,
+   "text": "Question me, I can answer all"
+  },
+  {
+   "t": 183.646,
+   "text": "LO-O-OVE"
+  },
+  {
+   "t": 184.54,
+   "text": "I know the algebraic expression of"
+  },
+  {
+   "t": 187.665,
+   "text": "LO-O-OVE"
+  },
+  {
+   "t": 188.483,
+   "text": "Though you are free"
+  },
+  {
+   "t": 189.746,
+   "text": "I am trapped"
+  },
+  {
+   "t": 190.801,
+   "text": "Trapped in"
+  },
+  {
+   "t": 191.356,
+   "text": "LO-O-OVE"
+  },
+  {
+   "t": 193.46,
+   "text": "(instrumental — open loop)"
+  },
+  {
+   "t": 205.811,
+   "text": "EXECUTION"
+  },
+  {
+   "t": 206.62,
+   "text": "(outro)"
+  },
+  {
+   "t": 211.984,
+   "text": ""
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "reliable": false,
+ "scale": 1.0,
+ "offset": -7.541000000000007,
+ "score": 0.17683507313104296,
+ "null_mean": 0.05533078963071228,
+ "null_max": 0.17191895615935188,
+ "midi_span": 208.4998,
+ "audio_dur": 211.91,
+ "note": "audio beat grid in beats.json is authoritative"
+}
