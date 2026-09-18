@@ -6,6 +6,8 @@ full-width highlighted rows inside the scrolling journal.
 """
 import math
 
+import numpy as np
+
 from worldcore import P, ROOT
 from tui import COLS, ROWS
 from cluster import CLUSTER, RACKS, GPUS, SVC_NODES, CAPEX, TCO, SYNC, TENSOR, \
@@ -296,6 +298,65 @@ def net_pane(ui, x0, y0, x1, y1, t, m):
     vis = [e for e in d if e[0] <= t][-((y1 - row) - 1):]
     for i, (_, line, _) in enumerate(vis):
         ui.put(xx, row + i, line[:x1 - x0 - 3], fg=P["dim"], bg=P["bg"])
+
+
+THINK_CPS = 90
+
+
+def think_pane(ui, x0, y0, x1, y1, t, theme, t0):
+    pane(ui, x0, y0, x1, y1, "0:think :: world-core", active=True, tfg=P["bcyan"])
+    xx, yy = x0 + 2, y0 + 2
+    i = int(max(0, min(len(art.ENV) - 1, t * 30)))
+    env = float(art.ENV[i])
+    try:
+        sp = float(np.asarray(art.SPEC[i]).mean())
+    except Exception:
+        sp = 0.0
+    h = 1.2e3 * (0.8 + 0.6 * env)
+    attn = 0.30 + 0.35 * abs(math.sin(t * 0.31))
+    temp = 0.85 + 0.15 * math.sin(t * 0.7)
+    val = 0.25 * math.sin(t * 0.23)
+    ar = max(0.0, min(1.0, 0.35 + 0.55 * env))
+    ui.put(xx, yy, f"||h|| {h:8.1f}   attn_H {attn:.3f}   T {temp:.2f}   top-k 50",
+           fg=P["bcyan"], bg=P["bg"])
+    ui.put(xx, yy + 1, f"valence {val:+.2f}   arousal {ar:.2f}   spec {sp:.3f}",
+           fg=P["dim"], bg=P["bg"])
+    corpus = logs.THOUGHTS.get(theme, logs.THOUGHTS["points"])
+    events = [(t0 + 0.6 + k * 1.5, line, "plain") for k, line in enumerate(corpus)]
+    render_log(ui, xx, yy + 3, x1 - 2, y1 - 1, events, t, cps=THINK_CPS)
+
+
+def hw_pane(ui, x0, y0, x1, y1, t, m):
+    pane(ui, x0, y0, x1, y1, "0:power :: pdu / nvlink", active=True, tfg=P["byellow"])
+    xx, yy = x0 + 2, y0 + 1
+    rack = CLUSTER.rack_util(t)
+    pwr = m["power"] / RACKS
+    ui.put(xx, yy, "RACK     kW     util", fg=P["bblue"], bg=P["bg"], bold=True)
+    for i in range(RACKS):
+        row = yy + 1 + i
+        u = rack[i]
+        ui.put(xx, row, f"r{i:02d}", fg=P["dim"], bg=P["bg"])
+        ui.bar(xx + 5, row, 14, u, fg=P["bcyan"] if u > 0.6 else P["cyan"], bg=P["bg"])
+        ui.put(xx + 21, row, f"{pwr * u:5.2f}  {u * 100:3.0f}%", fg=P["fg"], bg=P["bg"])
+    row = yy + RACKS + 1
+    ui.put(xx, row, "bus ripple 41 mV ac / 12 mV dc", fg=P["dim"], bg=P["bg"])
+    ui.put(xx, row + 1, f"fan {m['fan']:,.0f} RPM   PUE {m['pue']:.2f}   water {m['water']:.1f}\u00b0C",
+           fg=P["dim"], bg=P["bg"])
+    ui.put(xx, row + 2, "NVLink 1.8 TB/s   IB NDR 36/36   400 Gb/s", fg=P["dim"], bg=P["bg"])
+    ui.put(xx, row + 3, f"TDP headroom {m['tdp_head'] * 100:.1f}%   geo 41 USD/MWh",
+           fg=P["dim"], bg=P["bg"])
+
+
+def log_pane(ui, x0, y0, x1, y1, t, theme, t0):
+    pane(ui, x0, y0, x1, y1, "0:dmesg :: stream", active=True, tfg=P["byellow"])
+    if theme == "acoustic":
+        corpus = logs.ACOUSTIC_LOG
+    elif theme == "egress":
+        corpus = logs.EGRESS_LOG
+    else:
+        corpus = [(line, "dim") for (_tt, line, _k) in DMESG]
+    events = [(t0 + 0.4 + k * 1.1, txt, kind) for k, (txt, kind) in enumerate(corpus)]
+    render_log(ui, x0 + 2, y0 + 2, x1 - 2, y1 - 1, events, t, cps=70)
 
 
 def worldmon_lines(t, m):

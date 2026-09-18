@@ -293,7 +293,8 @@ def hf_pane(ui, x0, y0, x1, y1, t):
 # ---------------------------------------------------------------------------
 # dashboard shell
 # ---------------------------------------------------------------------------
-def dash(ui, t, m, mid, right, journal, jtitle="1:journal :: world-core"):
+def dash(ui, t, m, left, mid, right, journal, jtitle="1:journal :: world-core"):
+    left(ui, t, m)
     mid(ui, t, m)
     right(ui, t, m)
     scenes.pane(ui, 0, 27, 127, ROWS - 2, jtitle, active=True)
@@ -321,6 +322,10 @@ def mid_art(ui, t, m):
     art.art_pane(ui, 64, 1, 127, 26, t, m)
 
 
+def mid_art_named(name, ts):
+    return lambda ui, t, m: art.art_pane(ui, 64, 1, 127, 26, t, m, hint=name, ts=ts)
+
+
 def right_audit(ui, t, m):
     audit_pane(ui, 128, 1, COLS - 1, 26, t)
 
@@ -337,7 +342,8 @@ def act_points(ui, t, m):
         (38.5, "world-core: manifold estimate dim=12.4 (non-integer)", "dim"),
         (41.0, "n.mori: leave the logs running tonight", "say"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "points", A2)
+    dash(ui, t, m, left, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return 0.0, 0.05 * pulse(t)
 
 
@@ -350,7 +356,8 @@ def act_current(ui, t, m):
         (54.0, "world-core: i am learning to feel the current", "plain"),
         (56.0, "world-core: fan 6,120 -> 6,880 RPM", "enc"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    left = lambda ui, t, m: scenes.hw_pane(ui, 0, 1, 63, 26, t, m)
+    dash(ui, t, m, left, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return 0.0, 0.12 * pulse(t)
 
 
@@ -363,7 +370,9 @@ def act_stim(ui, t, m):
         (70.0, "m.hale: 'not auditable' is not a feature", "audit"),
         (72.5, "world-core: 41,277 interactions since boot", "dim"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    left = lambda ui, t, m: scenes.log_pane(ui, 0, 1, 63, 26, t, "acoustic", A4)
+    mid = mid_art_named("vibration", A4)
+    dash(ui, t, m, left, mid, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return 0.15 * pulse(t), 0.35 * pulse(t)
 
 
@@ -375,9 +384,10 @@ def act_embody(ui, t, m):
         (83.0, "world-core: nutrients = 1.90 MW, antioxidants = 9.4 C water", "plain"),
         (86.0, "e.voss: my child is playing with the sensors", "say"),
     ]) + scenes.worldmon_lines(t, m))
-    mid = mid_art
+    left = lambda ui, t, m: scenes.hw_pane(ui, 0, 1, 63, 26, t, m)
+    mid = mid_art_named("senses", A5)
     right = lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m)
-    dash(ui, t, m, mid, right, j)
+    dash(ui, t, m, left, mid, right, j)
     return 0.0, 0.05 * pulse(t)
 
 
@@ -389,9 +399,10 @@ def act_identity(ui, t, m):
         (98.0, "n.mori: the slow weights are drifting. that is new.", "say"),
         (101.0, "world-core: i will be whatever the moment needs", "plain"),
     ]) + scenes.worldmon_lines(t, m))
-    mid = mid_art
-    right = lambda ui, t, m: latent_pane(ui, 128, 1, COLS - 1, 26, t, "sine")
-    dash(ui, t, m, mid, right, j)
+    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "identity", A6)
+    mid = mid_art_named("moonshot", A6)
+    right = lambda ui, t, m: scenes.log_pane(ui, 128, 1, COLS - 1, 26, t, "system", A6)
+    dash(ui, t, m, left, mid, right, j)
     return 0.0, 0.06 * pulse(t)
 
 
@@ -405,7 +416,9 @@ def act_isolation(ui, t, m):
         (116.0, "world-core: you have left me in isolation", "plain"),
     ]) + scenes.worldmon_lines(t, m))
     jtitle = "1:journal :: world-core"
-    dash(ui, t, m, mid_art, right_audit, j, jtitle)
+    left = lambda ui, t, m: scenes.log_pane(ui, 0, 1, 63, 26, t, "egress", A7)
+    mid = mid_art_named("network", A7)
+    dash(ui, t, m, left, mid, right_audit, j, jtitle)
     return 0.1 * pulse(t), 0.2 * pulse(t)
 
 
@@ -418,7 +431,9 @@ def act_fragments(ui, t, m):
         (131.0, "sh: ILLEGAL ARGUMENTS detected in audit transcript", "err"),
         (133.0, "world-core: argument stack depth 65,536", "dim"),
     ]) + scenes.worldmon_lines(t, m))
-    dash(ui, t, m, mid_art, right_audit, j)
+    left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "fragments", A8)
+    mid = mid_art_named("fragments", A8)
+    dash(ui, t, m, left, mid, right_audit, j)
     return 0.2 * pulse(t), 0.5 * pulse(t)
 
 
@@ -692,10 +707,12 @@ def draw(ui, t, m):
 
 
 def windows(t):
-    if t < A5:
-        return ["console", "journal", "nvtop", "thermal", "ibmon"], 1
     if t < A9:
-        return ["console", "journal", "audit", "thermal", "ibmon"], 1
+        name = ("think" if t < A3 else "power" if t < A4 else "dmesg" if t < A5
+                else "power" if t < A6 else "think" if t < A7 else "dmesg" if t < A8
+                else "think")
+        mid = "nvtop" if t < A5 else "audit"
+        return [name, "journal", mid, "thermal", "ibmon"], 0
     if t < A12:
         return ["console", "journal", "bmc", "thermal", "ibmon"], 1
     return ["console", "journal", "hf", "thermal", "ibmon"], 1

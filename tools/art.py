@@ -25,6 +25,7 @@ from tui import COLS, ROWS
 # ---------------------------------------------------------------------------
 _d = np.load(os.path.join(ROOT, "data", "react.npz"))
 ENV = _d["env"].astype(np.float32)
+SPEC = _d["spec"].astype(np.float32)
 _b = np.load(os.path.join(ROOT, "data", "beats.npz"))
 BEATS = _b["beats"]
 
@@ -409,6 +410,142 @@ def lattice(ui, x0, y0, x1, y1, t, m):
 
 
 # ---------------------------------------------------------------------------
+# act emblems (59.2 - 134.4)
+# ---------------------------------------------------------------------------
+ISO0, FRAG0 = 103.5, 118.3
+
+
+def vibration(ui, x0, y0, x1, y1, t, m):
+    pane(ui, x0, y0, x1, y1, "viz :: feel your vibrations", active=True)
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    rx, ry = (x1 - x0) / 2.0 - 3, (y1 - y0) / 2.0 - 1
+    p = pulse(t)
+    cols = [P["bcyan"], P["bgreen"], P["bmagenta"], P["byellow"]]
+    for k in range(4):
+        freq = 2.0 + k * 1.6
+        amp = ry * (0.18 + 0.05 * k) * (0.7 + 0.5 * p)
+        off = (k - 1.5) * ry * 0.16
+        _curve(ui, x0 + 2, x1 - 2, cy + off, amp,
+               lambda u, f=freq: math.sin(f * u + t * (1.6 + 0.3 * k)), "*", cols[k])
+    base = int(cy + ry * 0.62)
+    for r in range(3):
+        for xx in range(x0 + 2, x1 - 1):
+            if ((xx * 13 + r * 29 + int(t * 14)) % 53) < 2:
+                ui.put(xx, base + r, "|", fg=P["byellow"], bg=P["bg"])
+    ui.put(x0 + 2, y1 - 1, "acoustic 2,000 ch   vibration 0.42 mm/s   purr 27 Hz",
+           fg=P["dim"], bg=P["bg"])
+
+
+def senses(ui, x0, y0, x1, y1, t, m):
+    pane(ui, x0, y0, x1, y1, "viz :: nutrients / antioxidants", active=True)
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    rx, ry = (x1 - x0) / 2.0 - 3, (y1 - y0) / 2.0 - 1
+    # body silhouette (head + shoulders + torso), faint
+    ellipse(ui, cx, cy - ry * 0.62, rx * 0.16, ry * 0.20, "o", fg=P["dim"], bg=P["bg"])
+    line(ui, cx - rx * 0.55, cy - ry * 0.30, cx - rx * 0.10, cy - ry * 0.42, "\\", fg=P["faint"], bg=P["bg"])
+    line(ui, cx + rx * 0.55, cy - ry * 0.30, cx + rx * 0.10, cy - ry * 0.42, "/", fg=P["faint"], bg=P["bg"])
+    line(ui, cx, cy - ry * 0.40, cx, cy + ry * 0.55, "|", fg=P["faint"], bg=P["bg"])
+    # ECG across the pane, QRS on the beat
+    for xx in range(x0 + 2, x1 - 1):
+        u = (xx - (x0 + 2)) / max(1.0, (x1 - x0 - 4))
+        ph = (u * 5.0 - t * 1.1) % 1.0
+        if 0.44 < ph < 0.47:
+            yy = cy + ry * 0.95
+            ch = "|"
+        elif 0.47 <= ph < 0.50:
+            yy = cy - ry * 0.95
+            ch = "|"
+        elif 0.50 <= ph < 0.56:
+            yy = cy + ry * 0.22
+            ch = "*"
+        else:
+            yy = cy
+            ch = "-"
+        ui.put(xx, int(round(yy)), ch, fg=P["bgreen"] if ch != "-" else P["green"], bg=P["bg"])
+    # nutrient in / waste out streams
+    ui.put(x0 + 3, y0 + 2, "nutrients 1.90 MW", fg=P["byellow"], bg=P["bg"])
+    for i in range(6):
+        ui.put(x0 + 21 + i * 2, y0 + 2, ">", fg=P["byellow"], bg=P["bg"])
+    ui.put(x1 - 22, y1 - 2, "waste ->", fg=P["orange"], bg=P["bg"])
+    for i in range(6):
+        ui.put(x1 - 11 + i * 2, y1 - 2, "<", fg=P["orange"], bg=P["bg"])
+    # sensor nodes on the body, lit by the beat
+    p = pulse(t)
+    for i in range(64):
+        a = i * 2.399963
+        rr = math.sqrt((i + 0.5) / 64.0)
+        nx = math.cos(a) * rr * rx * 0.52
+        ny = math.sin(a) * rr * ry * 0.78
+        lit = (i * 7 % 11) < 6 and p > 0.3
+        ui.put(int(cx + nx), int(cy + ny), "*" if lit else "\u00b7",
+               fg=P["bcyan"] if lit else P["faint"], bg=P["bg"])
+
+
+def network(ui, x0, y0, x1, y1, t, m):
+    pane(ui, x0, y0, x1, y1, "viz :: i am in isolation", active=True, tfg=P["bred"])
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    rx, ry = (x1 - x0) / 2.0 - 6, (y1 - y0) / 2.0 - 2
+    cnt = max(1, int(round(12 - 11 * smoothstep(seg(t, ISO0 + 1.5, ISO0 + 11.5)))))
+    pos = []
+    for i in range(12):
+        a = 2 * math.pi * i / 12 - math.pi / 2
+        pos.append((cx + rx * math.cos(a), cy + ry * math.sin(a)))
+    for i in range(12):
+        if i < cnt and (i + 1) < cnt:
+            line(ui, pos[i][0], pos[i][1], pos[i + 1][0], pos[i + 1][1],
+                 "+", fg=P["green"], bg=P["bg"])
+        if i < cnt and i == cnt - 1:
+            line(ui, pos[i][0], pos[i][1], cx, cy, "+", fg=P["green"], bg=P["bg"])
+    for i in range(12):
+        x, y = int(round(pos[i][0])), int(round(pos[i][1]))
+        if i < cnt:
+            ui.put(x, y, "O", fg=P["bcyan"] if i == cnt - 1 else P["bgreen"], bg=P["bg"])
+        else:
+            ui.put(x, y, "\u00b7", fg=P["faint"], bg=P["bg"])
+    ui.put(int(cx) - 5, int(cy), "@world" if cnt == 1 else "peers",
+           fg=P["bcyan"] if cnt == 1 else P["dim"], bg=P["bg"])
+    ui.put(x0 + 2, y1 - 1, "peers %2d/12   egress deny hf.co   no footsteps" % cnt,
+           fg=P["dim"], bg=P["bg"])
+
+
+def fragments(ui, x0, y0, x1, y1, t, m):
+    pane(ui, x0, y0, x1, y1, "viz :: prune FRAGMENTS", active=True, tfg=P["bmagenta"])
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    rx, ry = (x1 - x0) / 2.0 - 3, (y1 - y0) / 2.0 - 1
+    prog = smoothstep(seg(t, FRAG0 + 1.0, FRAG0 + 12.0))
+    for ring in range(1, 7):
+        erxp, eryp = rx * ring / 7.0, ry * ring / 7.0
+        n = max(24, int(2.4 * math.pi * max(erxp, eryp * 2)))
+        for i in range(n):
+            a = 2 * math.pi * i / n
+            px, py = int(round(cx + erxp * math.cos(a))), int(round(cy + eryp * math.sin(a)))
+            h = ((px * 131 + py * 197 + ring * 53) & 0xFF) / 255.0
+            if h < prog:
+                continue
+            ui.put(px, py, "*" if h > 0.5 else "+", fg=P["bmagenta"] if h > 0.5 else P["dim"],
+                   bg=P["bg"])
+    for i in range(12):
+        a = 2 * math.pi * i / 12
+        if ((i * 37 + int(prog * 12)) % 5) == 0:
+            continue
+        line(ui, cx, cy, cx + rx * math.cos(a), cy + ry * math.sin(a), "\u00b7",
+             fg=P["faint"], bg=P["bg"])
+    ui.put(x0 + 2, y1 - 1, "low-salience traces %4.1fM / 4.1M   forgetting=ON"
+           % (4.1 * (1 - prog)), fg=P["dim"], bg=P["bg"])
+
+
+def moonshot(ui, x0, y0, x1, y1, t, m):
+    import decal
+    pane(ui, x0, y0, x1, y1, "viz :: moonshot", active=True, tfg=P["bcyan"])
+    p = 0.0
+    for tb in (89.6, 93.4, 97.2, 101.0):
+        q = (t - tb) / 0.55
+        if 0.0 <= q <= 1.0:
+            p = max(p, 1.0 - abs(2.0 * q - 1.0))
+    decal.moonshot_kimi(ui, x0, y0, x1, y1, p)
+
+
+# ---------------------------------------------------------------------------
 # dispatch
 # ---------------------------------------------------------------------------
 def schedule_name(t):
@@ -421,8 +558,11 @@ def schedule_name(t):
     return "lattice"
 
 
-def art_pane(ui, x0, y0, x1, y1, t, m, hint=None):
+def art_pane(ui, x0, y0, x1, y1, t, m, hint=None, ts=None):
     name = hint or schedule_name(t)
+    if ts is not None and (t - ts) < 0.7 and name in ("vibration", "senses", "network", "fragments"):
+        lattice(ui, x0, y0, x1, y1, t, m)
+        return
     if name == "rack":
         rack_map(ui, x0, y0, x1, y1, t, m)
     elif name == "geometry":
@@ -431,5 +571,15 @@ def art_pane(ui, x0, y0, x1, y1, t, m, hint=None):
         heart(ui, x0, y0, x1, y1, t, m)
     elif name == "globe":
         globe(ui, x0, y0, x1, y1, t, m)
+    elif name == "vibration":
+        vibration(ui, x0, y0, x1, y1, t, m)
+    elif name == "senses":
+        senses(ui, x0, y0, x1, y1, t, m)
+    elif name == "network":
+        network(ui, x0, y0, x1, y1, t, m)
+    elif name == "fragments":
+        fragments(ui, x0, y0, x1, y1, t, m)
+    elif name == "moonshot":
+        moonshot(ui, x0, y0, x1, y1, t, m)
     else:
         lattice(ui, x0, y0, x1, y1, t, m)
