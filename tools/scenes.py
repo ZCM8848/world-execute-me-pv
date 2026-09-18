@@ -91,10 +91,10 @@ def render_log(ui, x0, y0, x1, y1, events, t, cps=54):
     last = vis[-1] if vis else None
     for i, e in enumerate(vis):
         tt, text, kind = e
-        if e is last and kind not in ("lyr", "big"):
-            n = int((t - tt) * cps)
-            if (t - tt) < len(text) / cps + 0.05:
-                text = text[:max(0, n)]
+        if kind not in ("lyr", "big"):
+            dt = t - tt
+            if dt < len(text) / cps + 0.05:
+                text = text[:max(0, int(dt * cps))]
         draw_line(ui, x0, y0 + i, w, text, kind, t, tt)
     if vis and int(t * 2) % 2 == 0 and last is not None and last[2] not in ("lyr", "big"):
         yy = y0 + len(vis) - 1
@@ -381,14 +381,15 @@ def worldmon_lines(t, m):
         return out
     step0 = 0.041
     k0 = int((t - 14.2) / (step0 * 20))
-    for j in range(max(0, k0 - 6), k0 + 1):
+    for j in range(0, k0 + 1):
         tt = 14.2 + j * step0 * 20
         if tt > t:
             continue
+        ld = CLUSTER.metrics(tt)["load"]
         st = CLUSTER.step(tt)
-        loss = 2.31 - 0.42 * m["load"] + 0.35 * math.exp(-j * 0.05) + 0.01 * math.sin(j)
+        loss = 2.31 - 0.42 * ld + 0.35 * math.exp(-j * 0.05) + 0.01 * math.sin(j)
         out.append((round(tt, 2),
-                    f"[step {st:>6}] loss {loss:.4f}  \u03b7 3.0e-4  gnorm {0.7 + 0.3 * m['load']:.3f}  "
+                    f"[step {st:>6}] loss {loss:.4f}  \u03b7 3.0e-4  gnorm {0.7 + 0.3 * ld:.3f}  "
                     f"fast/slow/ultra sync ok", "plain"))
     return out
 
