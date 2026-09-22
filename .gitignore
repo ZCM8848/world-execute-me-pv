@@ -14,3 +14,10 @@ venv/
 .DS_Store
 Thumbs.db
 *.swp
+
+# local-only reference images (not for the remote)
+kimi.webp
+moonshot.jpg
+
+# local session log
+session-ses_*.md
