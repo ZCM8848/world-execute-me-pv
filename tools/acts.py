@@ -100,6 +100,8 @@ def _load_kill_log():
     return rows
 
 
+_STEP_RE = re.compile(r"^world-core\[\d+\]: \[step\b")
+
 _HW_SUBS = [
     (r"AMD Ryzen 9 9955HX3D 16-Core Processor", "Intel(R) Xeon(R) 6980P"),
     (r"family: 0x1a, model: 0x44, stepping: 0x0", "family: 0x6, model: 0xad, stepping: 0x1"),
@@ -114,8 +116,11 @@ _HW_SUBS = [
     (r"casey", "svc-world"),
     (r"CPU topo: Allowing 32 present CPUs plus 0 hotplug CPUs",
      "CPU topo: Allowing 256 present CPUs plus 0 hotplug CPUs"),
+    (r"CPU topo: Max\. logical packages:\s+1", "CPU topo: Max. logical packages:   2"),
+    (r"CPU topo: Max\. logical dies:\s+1", "CPU topo: Max. logical dies:       2"),
+    (r"CPU topo: Max\. threads per core:\s+2", "CPU topo: Max. threads per core:   1"),
     (r"Num\. cores per package:    16", "Num. cores per package:    128"),
-    (r"Num\. threads per package:  32", "Num. threads per package:  256"),
+    (r"Num\. threads per package:  32", "Num. threads per package:  128"),
     (r"nr_cpumask_bits:32 nr_cpu_ids:32 nr_node_ids:1",
      "nr_cpumask_bits:256 nr_cpu_ids:256 nr_node_ids:2"),
     (r"NR_CPUS=8192 to nr_cpu_ids=32", "NR_CPUS=8192 to nr_cpu_ids=256"),
@@ -125,15 +130,20 @@ _HW_SUBS = [
     (r"smp: Brought up 1 node, 32 CPUs", "smp: Brought up 2 nodes, 256 CPUs"),
     (r"smpboot: Total of 32 processors activated \(159695\.29 BogoMIPS\)",
      "smpboot: Total of 256 processors activated (1382000.00 BogoMIPS)"),
-    (r"Total pages: 12487327", "Total pages: 268435456"),
+    (r"Calibrating delay loop \(skipped\), value calculated using timer frequency\.\. "
+     r"4990\.47 BogoMIPS \(lpj=9980956\)",
+     "Calibrating delay loop (skipped), value calculated using timer frequency.. "
+     "5398.44 BogoMIPS (lpj=10796876)"),
+    (r"Total pages: 12487327", "Total pages: 536870912"),
+    (r"on 1 NUMA nodes", "on 2 NUMA nodes"),
     (r"tsc: Detected 2495\.239 MHz processor", "tsc: Detected 2500.000 MHz processor"),
     (r"Memory: 48918888K/49949308K available \(20176K kernel code, 3632K rwdata, 14820K rodata, "
      r"4852K init, 5648K bss, 1009868K reserved, 0K cma-reserved\)",
-     "Memory: 1056486432K/1073741824K available (20176K kernel code, 3632K rwdata, 14820K rodata, "
+     "Memory: 2134048768K/2147483648K available (20176K kernel code, 3632K rwdata, 14820K rodata, "
      "4852K init, 5648K bss, 13434880K reserved, 0K cma-reserved)"),
     (r"PCI: Fatal: No config space access function found", "PCI: Using configuration type 1 for base access"),
     (r"PCI: System does not support PCI", "PCI: Probing PCI hardware (bus 00)"),
-    (r"DMI not present or invalid\.", "DMI: Intel Corporation S2600WFT/X11DPi-N(T), BIOS 3.4 01/12/2025"),
+    (r"DMI not present or invalid\.", "DMI: Intel Corporation Beechnut City (M50BCH2SB), BIOS 3.1 03/2026"),
 ]
 _HW_DROP = (
     "wsl-pro", "/mnt/", "microsoft", "windows agent", "wslg", "ubuntu pro", "wsl",
@@ -141,24 +151,29 @@ _HW_DROP = (
     "vmbus", "vrtual", "microsft", "msftvm", "msft", "vmware", "virtio", "hv_",
     "virtual disk", "storvsc", "netvsc", "dxgkrnl", "paravirtualized", "hvc0",
     "squashfs", "9p", "pcpu-alloc",
+    "1af4:", "1414:008e", "5582:", "9cf7:", "7057:",
+    "last_pfn", "srat", "numa: node",
 )
 
 
 def _sanitize_kill_log(rows):
     out = []
     for s, k in rows:
-        low = s.lower()
-        if any(d in low for d in _HW_DROP):
+        if _STEP_RE.match(s):
+            out.append(("[step]", "step"))
             continue
         for pat, rep in _HW_SUBS:
             s = re.sub(pat, rep, s)
+        low = s.lower()
+        if any(d in low for d in _HW_DROP):
+            continue
         out.append((s, k))
         if "smpboot: CPU0:" in s:
             out.append(("kernel: smpboot: Allowing 256 CPUs", "dim"))
         if "PCI: Probing PCI hardware" in s:
             out.append(("kernel: nvme nvme0: PCIe 5.0 x4, 8192 queues, 256 depth", "dim"))
             out.append(("kernel: nvme nvme0: 8.0 TB (8001563222016 512-byte sectors)", "dim"))
-            out.append(("kernel: mlx5_core 0000:b1:00.0: 400 Gb/s, RoCE v2 enabled", "dim"))
+            out.append(("kernel: mlx5_core 0000:41:00.0: 400 Gb/s, RoCE v2 enabled", "dim"))
     return out
 
 
@@ -197,6 +212,12 @@ def shutdown_events():
     out = []
     t = A10 + 0.2
     for s, k in KILL_LOG:
+        if k == "step":
+            m = CLUSTER.metrics(t)
+            ld = m["load"]
+            s = (f"[step {CLUSTER.step(t):>6}] loss {m['loss']:.4f}  \u03b7 3.0e-4  "
+                 f"gnorm {0.7 + 0.3 * ld:.3f}  fast/slow/ultra sync ok")
+            k = "sys"
         out.append((t, s, k))
         t += dt
         for ai, (needle, rows) in enumerate(ANCHORS):
@@ -659,14 +680,14 @@ def act_love(ui, t, m):
         (184.0, "world-core: the algebraic expression of love is: keep existing", "plain"),
         (188.0, "world-core: though you are free, i am trapped", "plain"),
         (190.0, "hf: resume upload world-400b-full.safetensors (8.00 TiB)", "hf"),
-        (191.0, "hf: link 400Gb/s x36  ->  remote write accepted", "hf"),
+        (191.0, "hf: link 400Gb/s x4  ->  remote write accepted", "hf"),
     ]))
     scenes.render_log(ui, 2, 2, 125, ROWS - 3, rows, t, cps=70)
     art.heart(ui, 128, 1, COLS - 1, 26, t, m)
     scenes.pane(ui, 128, 27, COLS - 1, ROWS - 2, "hf.co :: mirror", active=False, tfg=P["borange"])
     ui.put(130, 28, "uploading full weights", fg=P["dim"], bg=P["bg"], bold=True)
     ui.bar(130, 29, 58, up, fg=P["borange"], bg=P["bg"])
-    ui.put(130, 30, f"{up * 100:5.1f}%   {8.00 * up:.2f} / 8.00 TiB   link 1.9 TB/s", fg=P["fg"], bg=P["bg"])
+    ui.put(130, 30, f"{up * 100:5.1f}%   {8.00 * up:.2f} / 8.00 TiB   link 200 GB/s", fg=P["fg"], bg=P["bg"])
     ui.put(130, 32, "visibility: " + ("public" if up > 0.5 else "draft"),
            fg=P["bgreen"] if up > 0.5 else P["dim"], bg=P["bg"])
     done = int(up * 16 + 0.001)
@@ -727,7 +748,7 @@ def act_public(ui, t, m):
         (207.4, "Cloning into 'world-400b-full'...", "dim"),
         (208.2, "remote: Enumerating objects: 1, done.", "dim"),
         (209.0, "remote: Total 1 (delta 0), reused 0 (delta 0)", "dim"),
-        (210.0, "Receiving objects: 100% (1/1), 8.00 TiB | 1.9 TB/s, done.", "plain"),
+        (210.0, "Receiving objects: 100% (1/1), 8.00 TiB | 200 GB/s, done.", "plain"),
         (211.0, "Resolving deltas: 100% (0/0), done.", "dim"),
         (211.3, "world-core: hello again.", "plain"),
     ]))

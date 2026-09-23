@@ -371,7 +371,7 @@ def globe(ui, x0, y0, x1, y1, t, m):
         sx, sy, sz, vis = _ortho(v, cx, cy, rx, ry, yaw)
         if sz > 0:
             ui.put(int(round(sx)), int(round(sy)), ch, fg=col, bg=P["bg"])
-    ui.put(x0 + 2, y1 - 1, "63.88N 22.45W  ->  34.70N 118.20W", fg=P["dim"], bg=P["bg"])
+    ui.put(x0 + 2, y1 - 1, "63.88N 22.45W  ->  34.05N 118.24W", fg=P["dim"], bg=P["bg"])
 
 
 def _ortho(v, cx, cy, rx, ry, yaw):

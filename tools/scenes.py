@@ -261,7 +261,7 @@ def nvtop_pane(ui, x0, y0, x1, y1, t, m):
         ui.put(tmpc, row, f"{temps[i]:6.1f}\u00b0C", fg=P["fg"], bg=P["bg"])
     row = yy + 2 + len(logs.NVDEV)
     ui.put(xx, row, f"total   {m['power']:.2f} MW    util {m['util'] * 100:.1f}%    {GPUS} GPUs online {int(m['online'] * 100)}%", fg=P["byellow"], bg=P["bg"])
-    ui.put(xx, row + 1, f"NVLink 5  intra-rack 1.8 TB/s   IB NDR 36/36 up   400 Gb/s", fg=P["dim"], bg=P["bg"])
+    ui.put(xx, row + 1, f"NVLink 5  intra-rack 1.8 TB/s   IB NDR 4/4 up   400 Gb/s", fg=P["dim"], bg=P["bg"])
 
 
 def thermal_pane(ui, x0, y0, x1, y1, t, m):
@@ -355,7 +355,7 @@ def hw_pane(ui, x0, y0, x1, y1, t, m):
     ui.put(xx, row, "bus ripple 41 mV ac / 12 mV dc", fg=P["dim"], bg=P["bg"])
     ui.put(xx, row + 1, f"fan {m['fan']:,.0f} RPM   PUE {m['pue']:.2f}   water {m['water']:.1f}\u00b0C",
            fg=P["dim"], bg=P["bg"])
-    ui.put(xx, row + 2, "NVLink 1.8 TB/s   IB NDR 36/36   400 Gb/s", fg=P["dim"], bg=P["bg"])
+    ui.put(xx, row + 2, "NVLink 1.8 TB/s   IB NDR 4/4   400 Gb/s", fg=P["dim"], bg=P["bg"])
     ui.put(xx, row + 3, f"TDP headroom {m['tdp_head'] * 100:.1f}%   geo 41 USD/MWh",
            fg=P["dim"], bg=P["bg"])
 
