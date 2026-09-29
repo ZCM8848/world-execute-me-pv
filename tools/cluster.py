@@ -29,9 +29,11 @@ TELEMETRY = 100_000
 SYNC = {"fast": 0.2, "slow": 78.1, "ultra": 407.0}
 TENSOR = {"frozen": 0.40, "limit": 2.00, "full": 8.00}
 PARAM_BYTES = 20
-SYNC_SPAN = 1672
+SYNC_SPAN = 2035  # ultra / fast = 407.0 / 0.2
 NAMED_CAPACITY_MB = 201
 HIDE_GAP = 995
+HF_SHARDS = 160
+HF_SHARD_GB = 50  # 160 x 50 GB = 8.00 TB (decimal)
 
 WORLD_USERS = ["e.voss", "n.mori", "m.hale", "svc-world"]
 
@@ -73,7 +75,7 @@ class Cluster:
         gpu_in = 24.0 - 1.8 * (1 - on) + 3.0 * ld + 0.6 * _w(t, 0.4)
         gpu_dt = 14.0 + 30.0 * act + 0.8 * _w(t, 0.9)
         gpu_out = gpu_in + gpu_dt
-        fan = (120 + 6060 * act) * (1 + 0.006 * _w(t, 0.7))
+        fan = (120 + 6730 * act) * (1 + 0.006 * _w(t, 0.7))
         util = clamp(0.86 * ld + 0.015 * _w(t, 1.3), 0, 1)
         pue = 1.20 + 0.01 * _w(t, 0.23)
         net = 400.0 * ld * (0.92 + 0.08 * _w(t, 2.1))

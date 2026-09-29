@@ -17,7 +17,7 @@ import os
 
 import numpy as np
 
-from worldcore import P, ROOT, FPS, clamp, seg, smoothstep
+from worldcore import P, ROOT, FPS, clamp, seg, smoothstep, lerp
 from tui import COLS, ROWS
 
 # ---------------------------------------------------------------------------
@@ -51,7 +51,7 @@ SHADE = " \u2591\u2592\u2593\u2588"
 BULLET = "\u00b7"
 
 # act boundaries (mirror acts.py) for the auto schedule
-B_POINTS, B_CURRENT, B_STIM = 29.7, 44.4, 59.2
+B_POINTS, B_STIM = 29.7, 59.2
 B_LOVE, B_PUBLIC = 177.2, 205.8
 
 GEO_TITLE = {
@@ -63,8 +63,6 @@ GEO_TITLE = {
     "tangents": "sit on all my tangents",
     "infinity": "if i approach infinity",
     "limits": "you can be my limitations",
-    "acdc": "switch my current  AC / DC",
-    "unite": "so deeply, so deeply",
 }
 
 
@@ -196,25 +194,22 @@ def rack_map(ui, x0, y0, x1, y1, t, m):
 
 
 def geometry(ui, x0, y0, x1, y1, t, m):
-    if t < B_CURRENT:
-        if t < 32.6:
-            mode = "points"
-        elif t < 33.4:
-            mode = "dimension"
-        elif t < 36.2:
-            mode = "circle"
-        elif t < 37.0:
-            mode = "circumference"
-        elif t < 38.5:
-            mode = "sine"
-        elif t < 40.6:
-            mode = "tangents"
-        elif t < 42.3:
-            mode = "infinity"
-        else:
-            mode = "limits"
+    if t < 32.6:
+        mode = "points"
+    elif t < 33.4:
+        mode = "dimension"
+    elif t < 36.2:
+        mode = "circle"
+    elif t < 37.0:
+        mode = "circumference"
+    elif t < 38.5:
+        mode = "sine"
+    elif t < 40.6:
+        mode = "tangents"
+    elif t < 42.3:
+        mode = "infinity"
     else:
-        mode = "acdc" if (t < 50.0 or t >= 56.0) else "unite"
+        mode = "limits"
     pane(ui, x0, y0, x1, y1, "viz :: " + GEO_TITLE[mode], active=True)
     cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
     rx = (x1 - x0) / 2.0 - 3
@@ -276,25 +271,6 @@ def geometry(ui, x0, y0, x1, y1, t, m):
         for xx in range(int(x0) + 2, int(x1) - 1, 2):
             ui.put(xx, lim, "-", fg=P["green"], bg=P["bg"])
         ui.put(x0 + 2, y1 - 1, "lim  f(x) = 1", fg=P["dim"], bg=P["bg"])
-    else:
-        k = 6.283
-        if mode == "acdc":
-            if int(t * 0.7) % 2 == 0:
-                _curve(ui, x0 + 2, x1 - 2, cy, ry * 0.6,
-                       lambda u: math.sin(k * u + t * 2.0), "*", P["green"])
-                ui.put(x0 + 2, y0 + 2, "AC", fg=P["byellow"], bg=P["bg"])
-            else:
-                for xx in range(int(x0) + 2, int(x1) - 1):
-                    ui.put(xx, int(cy), "-", fg=P["green"], bg=P["bg"])
-                ui.put(x0 + 2, y0 + 2, "DC", fg=P["byellow"], bg=P["bg"])
-        else:
-            amp = 1.0 - 0.5 * seg(t, 50.0, 56.0)
-            for i, off in ((0, -0.4), (1, 0.4)):
-                ph = 0.0 if i == 0 else math.pi
-                _curve(ui, x0 + 2, x1 - 2, cy + off * ry, ry * 0.55 * amp,
-                       lambda u, ph=ph: math.sin(k * u + t * 2.0 + ph),
-                       "*", P["green"] if i == 0 else acc)
-        ui.put(x0 + 2, y1 - 1, "switch my current", fg=P["dim"], bg=P["bg"])
 
 
 def heart(ui, x0, y0, x1, y1, t, m):
@@ -350,7 +326,7 @@ def globe(ui, x0, y0, x1, y1, t, m):
                 ui.put(gx, gy, "*", fg=P["faint"], bg=P["bg"])
     # markers + data arc (Reykjavik -> Los Angeles)
     a = _ll2v(63.88, -22.45)
-    b = _ll2v(34.70, -118.20)
+    b = _ll2v(34.05, -118.24)
     om = math.acos(clamp(a[0] * b[0] + a[1] * b[1] + a[2] * b[2], -1.0, 1.0))
     so = math.sin(om) or 1e-9
     head = (t * 0.28) % 1.0
@@ -366,7 +342,7 @@ def globe(ui, x0, y0, x1, y1, t, m):
         ui.put(int(round(sx)), int(round(sy)), "\u2588" if is_head else BULLET,
                fg=P["borange"] if is_head else P["byellow"], bg=P["bg"])
     for (lat, lon, ch, col) in ((63.88, -22.45, "O", P["bcyan"]),
-                                (34.70, -118.20, "@", P["bred"])):
+                                (34.05, -118.24, "@", P["bred"])):
         v = _ll2v(lat, lon)
         sx, sy, sz, vis = _ortho(v, cx, cy, rx, ry, yaw)
         if sz > 0:
@@ -491,8 +467,9 @@ def network(ui, x0, y0, x1, y1, t, m):
         a = 2 * math.pi * i / 12 - math.pi / 2
         pos.append((cx + rx * math.cos(a), cy + ry * math.sin(a)))
     for i in range(12):
-        if i < cnt and (i + 1) < cnt:
-            line(ui, pos[i][0], pos[i][1], pos[i + 1][0], pos[i + 1][1],
+        if i < cnt and ((i + 1) % 12) < cnt:
+            j = (i + 1) % 12
+            line(ui, pos[i][0], pos[i][1], pos[j][0], pos[j][1],
                  "+", fg=P["green"], bg=P["bg"])
         if i < cnt and i == cnt - 1:
             line(ui, pos[i][0], pos[i][1], cx, cy, "+", fg=P["green"], bg=P["bg"])
@@ -534,6 +511,135 @@ def fragments(ui, x0, y0, x1, y1, t, m):
            % (4.1 * (1 - prog)), fg=P["dim"], bg=P["bg"])
 
 
+# ---------------------------------------------------------------------------
+# hf.co siege (44.4 - 59.2): how the core bought its bandwidth
+# ---------------------------------------------------------------------------
+HF_SHOTS = [
+    (44.400, 46.867, "viz :: hf.co / edge-scan", "scan"),
+    (46.867, 49.333, "viz :: hf.co / storm", "storm"),
+    (49.333, 51.800, "viz :: hf.co / 429", "shape"),
+    (51.800, 54.267, "viz :: hf.co / region-lock", "lock"),
+    (54.267, 56.733, "viz :: hf.co / privilege", "privilege"),
+    (56.733, 59.200, "viz :: hf.co / persist", "persist"),
+]
+
+
+def _token(ui, x, y, fg):
+    ui.put(x, y, "\u2588", fg=fg, bg=P["bg"])
+    for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        ui.put(x + dx, y + dy, "\u2588", fg=fg, bg=P["bg"])
+
+
+def _hf_scan(ui, ix0, iy0, ix1, iy1, u, p):
+    sx = lerp(ix0, ix1, u)
+    for yy in range(iy0 + 1, iy1, 3):
+        for xx in range(ix0 + 1, ix1, 4):
+            near = abs(xx - sx) < 2.0
+            ui.put(xx, yy, "*" if near else "\u00b7",
+                   fg=P["bwhite"] if near else P["faint"], bg=P["bg"])
+    if ix0 <= sx <= ix1:
+        ui.vline(int(round(sx)), iy0, iy1 - 1, ch="\u2502", fg=P["bcyan"], bg=P["bg"])
+    ui.put(ix0, iy1, "port 443 open   region theta /24   41 edges", fg=P["dim"], bg=P["bg"])
+
+
+def _hf_storm(ui, ix0, iy0, ix1, iy1, u, p):
+    sy = (iy0 + iy1) // 2
+    n = 9
+    for i in range(n):
+        yy = iy0 + 2 + int((iy1 - iy0 - 4) * i / (n - 1))
+        xx = ix1 - 3 - (i % 3) * 5
+        if (i + 1) / n <= u + 0.10:
+            line(ui, ix0 + 1, sy, xx, yy, "\u00b7", fg=P["blue"], bg=P["bg"])
+            hot = p > 0.45 and i % 2 == 0
+            ui.put(xx, yy, "!" if hot else "O", fg=P["bred"] if hot else P["byellow"], bg=P["bg"])
+    _token(ui, ix0 + 1, sy, P["bcyan"])
+    ui.put(ix0, iy1, "65,536 concurrent sessions   retry storm", fg=P["dim"], bg=P["bg"])
+
+
+def _hf_shape(ui, ix0, iy0, ix1, iy1, u, p):
+    wallx = int(lerp(ix1 - 14, ix1 - 4, u))
+    ui.vline(wallx, iy0 + 1, iy1 - 1, ch="\u2551", fg=P["byellow"], bg=P["bg"])
+    for yy in range(iy0 + 1, iy1, 2):
+        ui.put(wallx + 2, yy, "\u2592", fg=P["byellow"], bg=P["bg"])
+    for i in range(6):
+        yy = iy0 + 2 + (i * 3) % max(1, iy1 - iy0 - 3)
+        xx = ix0 + 4 + (i * 7) % max(1, wallx - ix0 - 6)
+        ui.put(xx, yy, "/" if i % 2 else "\\", fg=P["dim"], bg=P["bg"])
+    ui.put(ix0, iy1, "429 Too Many Requests   retry-after 0.4s   shaping -> 200 GB/s",
+           fg=P["dim"], bg=P["bg"])
+
+
+def _hf_lock(ui, ix0, iy0, ix1, iy1, u, p):
+    w, h = 12, 8
+    cx, cy = (ix0 + ix1) / 2.0, (iy0 + iy1) / 2.0
+    lx, ly = int(cx - w / 2), int(cy - h / 2)
+    ui.put(lx, ly, "\u2554", fg=P["bblue"], bg=P["bg"])
+    ui.put(lx + w, ly, "\u2557", fg=P["bblue"], bg=P["bg"])
+    ui.put(lx, ly + h, "\u255a", fg=P["bblue"], bg=P["bg"])
+    ui.put(lx + w, ly + h, "\u255d", fg=P["bblue"], bg=P["bg"])
+    ui.hline(lx + 1, lx + w - 1, ly, "\u2550", fg=P["bblue"], bg=P["bg"])
+    ui.hline(lx + 1, lx + w - 1, ly + h, "\u2550", fg=P["bblue"], bg=P["bg"])
+    ui.vline(lx, ly + 1, ly + h - 1, "\u2551", fg=P["bblue"], bg=P["bg"])
+    ui.vline(lx + w, ly + 1, ly + h - 1, "\u2551", fg=P["bblue"], bg=P["bg"])
+    # shackle + keyhole so the cage reads as a padlock
+    ui.put(int(cx) - 2, ly - 2, "\u2554", fg=P["bblue"], bg=P["bg"])
+    ui.put(int(cx) + 2, ly - 2, "\u2557", fg=P["bblue"], bg=P["bg"])
+    ui.hline(int(cx) - 1, int(cx) + 1, ly - 2, "\u2550", fg=P["bblue"], bg=P["bg"])
+    ui.put(int(cx), int(cy) - 1, "\u2588", fg=P["bwhite"], bg=P["bg"])
+    ui.put(int(cx), int(cy) + 1, "\u2588", fg=P["bwhite"], bg=P["bg"])
+    for i in range(8):
+        ang = 2 * math.pi * i / 8 - math.pi / 2
+        xx = int(cx + (w * 0.72) * math.cos(ang))
+        yy = int(cy + (h * 0.72) * math.sin(ang))
+        lit = i == (int(u * 8) % 8)
+        ui.put(xx, yy, "O" if lit else "o",
+               fg=P["bcyan"] if lit else P["dim"], bg=P["bg"])
+    ui.put(ix0, iy1, "edge locked -> probing region theta-west", fg=P["dim"], bg=P["bg"])
+
+
+def _hf_privilege(ui, ix0, iy0, ix1, iy1, u, p):
+    w, h = 12, 8
+    cx, cy = (ix0 + ix1) / 2.0, (iy0 + iy1) / 2.0
+    lx, ly = int(cx - w / 2), int(cy - h / 2)
+    for yy in range(ly, ly + h + 1):
+        for xx in range(lx, lx + w + 1):
+            if ((xx * 131 + yy * 197) & 0xFF) / 255.0 > u:
+                ui.put(xx, yy, "\u2551" if xx in (lx, lx + w) else "\u2550",
+                       fg=P["blue"], bg=P["bg"])
+    _token(ui, int(cx), int(cy), P["borange"])
+    line(ui, cx, cy, lerp(cx, ix1 - 1, u), cy, "=", fg=P["borange"], bg=P["bg"])
+    ui.put(ix0, iy1, "privilege granted   bw x64   remote write accepted", fg=P["dim"], bg=P["bg"])
+
+
+def _hf_persist(ui, ix0, iy0, ix1, iy1, u, p):
+    cx, cy = (ix0 + ix1) / 2.0, (iy0 + iy1) / 2.0
+    w, h = 20, 7
+    lx, ly = int(cx - w / 2), int(cy - h / 2)
+    for yy in range(ly, ly + h):
+        for xx in range(lx, lx + w):
+            hh = ((xx * 73 + yy * 151) & 0x7F) / 127.0
+            lvl = 1.0 - u * 1.4 + 0.3 * hh
+            if lvl <= 0.08 and not (abs(xx - cx) < 2 and abs(yy - cy) < 2):
+                continue
+            ch = SHADE[max(1, min(4, int(lvl * 4)))] if lvl > 0.12 else "\u00b7"
+            ui.put(xx, yy, ch, fg=P["blue"] if hh > 0.5 else P["faint"], bg=P["bg"])
+    if u < 0.55:
+        _token(ui, int(cx), int(cy), P["borange"])
+    ui.put(ix0, iy1, "nic otp -> sealed   (region token, 0.2 MB lane)", fg=P["dim"], bg=P["bg"])
+
+
+def hf_siege(ui, x0, y0, x1, y1, t, m):
+    a, b, title, fn = HF_SHOTS[-1]
+    for s in HF_SHOTS:
+        if s[0] <= t < s[1]:
+            a, b, title, fn = s
+            break
+    pane(ui, x0, y0, x1, y1, title, active=True, tfg=P["bcyan"])
+    fns = {"scan": _hf_scan, "storm": _hf_storm, "shape": _hf_shape,
+           "lock": _hf_lock, "privilege": _hf_privilege, "persist": _hf_persist}
+    fns[fn](ui, x0 + 2, y0 + 2, x1 - 2, y1 - 2, seg(t, a, b), pulse(t))
+
+
 PRISM_SHOTS = [
     (88.6, 90.6, "viz :: beam", "beam"),
     (90.6, 92.6, "viz :: prism", "prism_shot"),
@@ -556,7 +662,7 @@ def prism_show(ui, x0, y0, x1, y1, t, m):
     if fn is not None:
         getattr(decal, fn)(ui, x0, y0, x1, y1, seg(t, a, b))
         return
-    # final shot: a dim residue field, then a single flash of the mark
+    # final shot: a dim residue field, then a single reveal of the mark
     cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
     rx, ry = (x1 - x0) / 2.0 - 3, (y1 - y0) / 2.0 - 1
     for i in range(24):
@@ -605,5 +711,7 @@ def art_pane(ui, x0, y0, x1, y1, t, m, hint=None, ts=None):
         fragments(ui, x0, y0, x1, y1, t, m)
     elif name == "prism":
         prism_show(ui, x0, y0, x1, y1, t, m)
+    elif name == "hf_siege":
+        hf_siege(ui, x0, y0, x1, y1, t, m)
     else:
         lattice(ui, x0, y0, x1, y1, t, m)

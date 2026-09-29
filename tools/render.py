@@ -21,8 +21,8 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from worldcore import W, H, FPS, ROOT, AUDIO, Post, clamp, seg, smoothstep, chorus
-from tui import Tui, build_atlas
+from worldcore import W, H, FPS, ROOT, AUDIO, Post, clamp, seg, smoothstep, P, ROWS, COLS
+from tui import Tui, build_atlas, CHARSET
 import scenes
 
 DATA = os.path.join(ROOT, "data")
@@ -67,13 +67,13 @@ def beat_pulse(ctx, t):
 
 def render_frame(t, ctx):
     ui = Tui()
-    flash, glitch, m = scenes.draw(ui, t)
+    scenes.draw(ui, t)
     frame = ui.render(ctx.atlas, ctx.atlas_b)
     gain = 0.985 + 0.05 * env_at(ctx, t)
     gain *= smoothstep(seg(t, 0.0, 0.7))
     if t > ctx.dur - 1.8:
         gain *= 1 - smoothstep(seg(t, ctx.dur - 1.7, ctx.dur - 0.1))
-    return ctx.post.compose(frame, t=t, gain=gain, bloom=0.42), m
+    return ctx.post.compose(frame, gain=gain, bloom=0.42)
 
 
 X264_ARGS = ["-c:v", "libx264", "-preset", "medium", "-crf", "16"]
@@ -110,10 +110,39 @@ def preview(ctx, times):
     os.makedirs(os.path.join(ROOT, "out"), exist_ok=True)
     for t in times:
         t0 = time.time()
-        arr, m = render_frame(float(t), ctx)
+        arr = render_frame(float(t), ctx)
         path = os.path.join(ROOT, "out", f"frame_{float(t):06.2f}.png")
         Image.fromarray(arr, "RGB").save(path)
         print(f"t={t:6.2f}s  {time.time() - t0:5.2f}s  {path}")
+
+
+def grid_dump(times):
+    """Print the raw character grid as ANSI truecolor text (no rasteriser)."""
+    ui = Tui()
+    chars = np.array([ord(c) for c in CHARSET], dtype=np.int32)
+    base = tuple(P["bg"])
+    for t in times:
+        ui.clear()
+        scenes.draw(ui, float(t))
+        print(f"--- t={float(t):.2f}s ---")
+        rows = []
+        for y in range(ROWS):
+            out = []
+            run = None
+            for x in range(COLS):
+                fg = tuple(int(v) for v in ui.fg[y, x])
+                bg = tuple(int(v) for v in ui.bg[y, x])
+                bo = int(ui.bo[y, x])
+                if (fg, bg, bo) != run:
+                    out.append("\x1b[0m\x1b[38;2;%d;%d;%dm" % fg)
+                    if bg != base:
+                        out.append("\x1b[48;2;%d;%d;%dm" % bg)
+                    if bo:
+                        out.append("\x1b[1m")
+                    run = (fg, bg, bo)
+                out.append(chr(int(chars[ui.ch[y, x]])))
+            rows.append("".join(out) + "\x1b[0m")
+        print("\n".join(rows))
 
 
 def encode(ctx, t0, t1, out_path, enc="auto"):
@@ -134,7 +163,7 @@ def encode(ctx, t0, t1, out_path, enc="auto"):
     total = f1 - f0
     for f in range(f0, f1):
         t = f / FPS
-        arr, _ = render_frame(t, ctx)
+        arr = render_frame(t, ctx)
         try:
             proc.stdin.write(arr.tobytes())
         except BrokenPipeError:
@@ -165,7 +194,7 @@ def _worker_init():
 
 
 def _frame_task(f):
-    arr, _ = render_frame(f / FPS, _WCTX)
+    arr = render_frame(f / FPS, _WCTX)
     return arr.tobytes()
 
 
@@ -219,6 +248,8 @@ def encode_parallel(t0, t1, out_path, jobs, enc="auto"):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--preview", nargs="+", type=float)
+    ap.add_argument("--grid", nargs="+", type=float,
+                    help="print the character grid as ANSI text (no rasteriser)")
     ap.add_argument("--range", nargs=2, type=float, metavar=("T0", "T1"))
     ap.add_argument("--video", type=str)
     ap.add_argument("--out", type=str, default=None)
@@ -240,6 +271,8 @@ if __name__ == "__main__":
             glrender.encode(0.0, float(d["dur"]), args.video, args.enc)
         else:
             ap.print_help()
+    elif args.grid:
+        grid_dump(args.grid)
     elif args.preview:
         ctx = build_ctx()
         print(f"loaded env={len(ctx.env)} beats={len(ctx.beats)} dur={ctx.dur:.1f}s")

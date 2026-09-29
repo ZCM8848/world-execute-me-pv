@@ -136,8 +136,8 @@ def _pack_atlas(atlas, cols=64):
 
 
 class GLRenderer:
-    def __init__(self):
-        self.win = pyglet.window.Window(width=W, height=H, visible=False)
+    def __init__(self, visible=False):
+        self.win = pyglet.window.Window(width=W, height=H, visible=visible)
         import moderngl
         self.ctx = moderngl.create_context()
         ctx = self.ctx
@@ -214,11 +214,19 @@ class GLRenderer:
     def render(self, t):
         ui = self.ui
         ui.clear()
-        flash, glitch, m = scenes.draw(ui, t)
+        scenes.draw(ui, t)
         self._upload(ui)
-        return self._composite(t), m
+        return self._composite(t)
 
-    def _composite(self, t):
+    def draw(self, t):
+        """Render directly to the window (interactive viewer path)."""
+        ui = self.ui
+        ui.clear()
+        scenes.draw(ui, t)
+        self._upload(ui)
+        self._composite(t, screen=True)
+
+    def _composite(self, t, screen=False):
         ctx = self.ctx
 
         ps = self.prog_scene
@@ -262,13 +270,17 @@ class GLRenderer:
         pc["gi"] = self._gi
         pc["gain"] = self.gain_at(t)
         pc["bloom"] = 0.42
-        pc["RES"] = (W, H)
+        target = self.ctx.screen if screen else self.fbo_out
+        pc["RES"] = tuple(target.size) if screen else (W, H)
         self.fbo_scene.color_attachments[0].use(0)
         self.fbo_qa.color_attachments[0].use(1)
         for i in range(8):
             self.t_grains[i].use(2 + i)
-        self._draw(self.vao_comp, self.fbo_out)
+        self._draw(self.vao_comp, target)
 
+        if screen:
+            self._gi = (self._gi + 1) % 8
+            return None
         buf = self.fbo_out.read(components=3, dtype="f1")
         arr = np.frombuffer(buf, np.uint8).reshape(H, W, 3)[::-1]
         self._gi = (self._gi + 1) % 8
@@ -291,7 +303,7 @@ def preview(times):
     os.makedirs(os.path.join(ROOT, "out"), exist_ok=True)
     for t in times:
         t0 = time.time()
-        data, _ = r.render(float(t))
+        data = r.render(float(t))
         arr = np.frombuffer(data, np.uint8).reshape(H, W, 3)
         path = os.path.join(ROOT, "out", f"gl_{float(t):06.2f}.png")
         Image.fromarray(arr, "RGB").save(path)
@@ -317,7 +329,7 @@ def encode(t0, t1, out_path, enc="auto"):
     ts = time.time()
     total = f1 - f0
     for f in range(f0, f1):
-        data, _ = r.render(f / FPS)
+        data = r.render(f / FPS)
         try:
             proc.stdin.write(data)
         except BrokenPipeError:

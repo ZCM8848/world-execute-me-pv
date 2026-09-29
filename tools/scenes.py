@@ -62,7 +62,7 @@ def center_text(ui, x0, x1, y, text, fg, bg=None, bold=True):
     ui.put(x, y, text, fg=fg, bg=bg, bold=bold)
 
 
-def draw_line(ui, x0, y, w, text, kind, t, tt):
+def draw_line(ui, x0, y, w, text, kind):
     x1 = x0 + w - 1
     if kind in ("big",):
         ui.fill(x0, y, x1, y, " ", bg=BIG_BG)
@@ -83,7 +83,7 @@ def draw_line(ui, x0, y, w, text, kind, t, tt):
         ui.put(x0, y, text, fg=STYLE_FG.get(kind, P["fg"]), bg=P["bg"])
 
 
-def render_log(ui, x0, y0, x1, y1, events, t, cps=54):
+def render_log(ui, x0, y0, x1, y1, events, t):
     w = x1 - x0 + 1
     h = y1 - y0 + 1
     events = sorted(events, key=lambda e: e[0])
@@ -92,7 +92,7 @@ def render_log(ui, x0, y0, x1, y1, events, t, cps=54):
     last = vis[-1] if vis else None
     for i, e in enumerate(vis):
         tt, text, kind = e
-        draw_line(ui, x0, y0 + i, w, text, kind, t, tt)
+        draw_line(ui, x0, y0 + i, w, text, kind)
     if vis and int(t * 2) % 2 == 0 and last is not None and last[2] not in ("lyr", "big"):
         yy = y0 + len(vis) - 1
         xx = x0 + len(last[1]) + 1
@@ -116,10 +116,9 @@ def status_bar(ui, t, windows, active):
         else:
             ui.put(x, 0, " " + label + "-", fg=(0, 0, 0), bg=P["green"])
         x += len(label) + 3
-    hh = int(t // 3600) % 100
-    mm = int(t // 60) % 60
-    ss = int(t) % 60
-    right = f"PROJECT:WORLD  SITE THETA  63.88N 22.45W  02:4{7}:{ss:02d} UTC "
+    clock = 2 * 3600 + 47 * 60 + int(t)
+    hh, mm, ss = clock // 3600 % 24, clock // 60 % 60, clock % 60
+    right = f"PROJECT:WORLD  SITE THETA  63.88N 22.45W  {hh:02d}:{mm:02d}:{ss:02d} UTC "
     ui.put(COLS - len(right) - 1, 0, right, fg=(0, 0, 0), bg=P["green"], bold=True)
 
 
@@ -170,7 +169,7 @@ def build_journal():
     i = 0
     while t < 29.7:
         if i % 5 == 0:
-            ev.append((round(t, 2), f"world-core: heartbeat {7.8 + 0.5 * math.sin(i):.1f}ms  peers=12  mirror=ARMED", "dim"))
+            ev.append((round(t, 2), f"world-core: heartbeat {12.8 + 0.5 * math.sin(i):.1f}ms  peers=12  mirror=ARMED", "dim"))
         elif i % 5 == 1:
             ev.append((round(t, 2), f"world-core: sense {SENSORS}pt {ACOUSTIC}ac {TELEMETRY}tel  \u03c3=0.31", "dim"))
         elif i % 5 == 2:
@@ -183,7 +182,7 @@ def build_journal():
         i += 1
     # the hook: a quietly provisioned off-site mirror
     ev.append((15.50, "egress: hf.co session OPEN  link=400Gb/s  (provisioned)", "warn"))
-    ev.append((25.90, "world-core: remote replica verified  hf.co/world-core/world-400b-full  8.00 TiB  public=true", "warn"))
+    ev.append((25.90, "world-core: remote mirror pre-staged  hf.co/world-core/world-400b-full  8.00 TB  private=true", "warn"))
     ev.append((29.709, "If I'm a set of points", "lyr"))
     return sorted(ev, key=lambda e: e[0])
 
@@ -209,7 +208,7 @@ def htop_pane(ui, x0, y0, x1, y1, t, m):
     pane(ui, x0, y0, x1, y1, "htop :: theta-svc-00", active=(t < 20))
     xx, yy = x0 + 2, y0 + 1
     load = 0.4 + 3.1 * m["load"]
-    up = int(t + 3 * 3600 + 14 * 60)
+    up = int(t) + 426 * 86400 + 14 * 60
     ui.put(xx, yy, f"CPU  {m['util'] * 100:4.1f}%   load {load:.2f} {load * 0.8:.2f} {load * 1.1:.2f}", fg=P["bcyan"], bg=P["bg"])
     ui.put(xx, yy + 1, f"Mem  1.82T/2.00T    Swap 0K/0K    Tasks 4126, 12 thr; 3 run", fg=P["dim"], bg=P["bg"])
     ui.put(xx, yy + 2, f"Up {up // 86400}d {up // 3600 % 24}:{up // 60 % 60:02d}   {SVC_NODES} nodes   {GPUS} gpu", fg=P["dim"], bg=P["bg"])
@@ -240,7 +239,7 @@ def htop_pane(ui, x0, y0, x1, y1, t, m):
 
 
 def nvtop_pane(ui, x0, y0, x1, y1, t, m):
-    pane(ui, x0, y0, x1, y1, "nvtop :: 864 x B300", active=(20 <= t < 40))
+    pane(ui, x0, y0, x1, y1, "nvtop :: 8/864 x B300", active=(20 <= t < 40))
     xx, yy = x0 + 2, y0 + 1
     utils = CLUSTER.gpu_utils(t, 8)
     temps = CLUSTER.gpu_temps(t, 8)
@@ -333,7 +332,7 @@ def think_pane(ui, x0, y0, x1, y1, t, theme, t0, t1):
     n = max(1, int((t1 - t0) / THINK_DT))
     events = [(t0 + 0.2 + k * THINK_DT,
                f"[tok {k:06d}] {corpus[k % len(corpus)]}", "plain") for k in range(n)]
-    render_log(ui, xx, yy + 3, x1 - 2, y1 - 1, events, t, cps=6000)
+    render_log(ui, xx, yy + 3, x1 - 2, y1 - 1, events, t)
 
 
 def hw_pane(ui, x0, y0, x1, y1, t, m):
@@ -369,27 +368,34 @@ def log_pane(ui, x0, y0, x1, y1, t, theme, t0):
     else:
         corpus = [(line, "dim") for (_tt, line, _k) in DMESG]
     events = [(t0 + 0.4 + k * 1.1, txt, kind) for k, (txt, kind) in enumerate(corpus)]
-    render_log(ui, x0 + 2, y0 + 2, x1 - 2, y1 - 1, events, t, cps=70)
+    render_log(ui, x0 + 2, y0 + 2, x1 - 2, y1 - 1, events, t)
+
+
+_WM = {"k": -1, "out": []}
 
 
 def worldmon_lines(t, m):
-    """Continuously generated world-mon output (step / loss / sync)."""
-    out = []
+    """Continuously generated world-mon output (step / loss / sync).
+
+    The stream is append-only, so it is cached and extended across frames;
+    out-of-order previews fall back to a rebuild.
+    """
     if t < 14.2:
-        return out
+        return []
     step0 = 0.041
     k0 = int((t - 14.2) / (step0 * 20))
-    for j in range(0, k0 + 1):
+    c = _WM
+    if c["k"] > k0:
+        c["k"], c["out"] = -1, []
+    for j in range(c["k"] + 1, k0 + 1):
         tt = 14.2 + j * step0 * 20
-        if tt > t:
-            continue
-        ld = CLUSTER.metrics(tt)["load"]
+        mm = CLUSTER.metrics(tt)
         st = CLUSTER.step(tt)
-        loss = 2.31 - 0.42 * ld + 0.35 * math.exp(-j * 0.05) + 0.01 * math.sin(j)
-        out.append((round(tt, 2),
-                    f"[step {st:>6}] loss {loss:.4f}  \u03b7 3.0e-4  gnorm {0.7 + 0.3 * ld:.3f}  "
-                    f"fast/slow/ultra sync ok", "plain"))
-    return out
+        c["out"].append((round(tt, 2),
+                         f"[step {st:>6}] loss {mm['loss']:.4f}  \u03b7 3.0e-4  gnorm {mm['gnorm']:.3f}  "
+                         f"fast/slow/ultra sync ok", "plain"))
+    c["k"] = k0
+    return c["out"]
 
 
 # ---------------------------------------------------------------------------
@@ -397,8 +403,7 @@ def worldmon_lines(t, m):
 # ---------------------------------------------------------------------------
 def scene_boot_full(ui, t, m):
     pane(ui, 0, 1, COLS - 1, ROWS - 2, "theta-svc-00 :: console (ttyS0)", active=True)
-    render_log(ui, 2, 2, COLS - 3, ROWS - 3, CONSOLE, t, cps=60)
-    return 0.0, 0.0
+    render_log(ui, 2, 2, COLS - 3, ROWS - 3, CONSOLE, t)
 
 
 def scene_split2(ui, t, m):
@@ -406,12 +411,7 @@ def scene_split2(ui, t, m):
     pane(ui, 114, 1, COLS - 1, ROWS - 2, "1:journal", active=False)
     con = [e for e in CONSOLE if e[2] in ("cmd", "ok", "plain", "dim")]
     render_log(ui, 2, 2, 111, ROWS - 3, con, t)
-    render_log(ui, 116, 2, COLS - 3, ROWS - 3, JOURNAL, t, cps=64)
-    flash = 0.0
-    for e in logs.SCENE_B:
-        if e[2] == "big" and 0 <= t - e[0] < 0.18:
-            flash = 0.35 * (1 - (t - e[0]) / 0.18)
-    return flash, 0.0
+    render_log(ui, 116, 2, COLS - 3, ROWS - 3, JOURNAL, t)
 
 
 def scene_split3(ui, t, m):
@@ -420,12 +420,7 @@ def scene_split3(ui, t, m):
     con = [e for e in CONSOLE if e[2] in ("cmd", "ok", "plain", "dim")]
     render_log(ui, 2, 2, 61, ROWS - 3, con, t)
     art.rack_map(ui, 64, 1, 127, ROWS - 2, t, m)
-    render_log(ui, 130, 2, COLS - 3, ROWS - 3, JOURNAL + worldmon_lines(t, m), t, cps=64)
-    flash = 0.0
-    for e in logs.SCENE_C:
-        if e[2] == "big" and 0 <= t - e[0] < 0.18:
-            flash = 0.4 * (1 - (t - e[0]) / 0.18)
-    return flash, 0.0
+    render_log(ui, 130, 2, COLS - 3, ROWS - 3, JOURNAL + worldmon_lines(t, m), t)
 
 
 def scene_dashboard(ui, t, m):
@@ -436,33 +431,28 @@ def scene_dashboard(ui, t, m):
     thermal_pane(ui, 128, 1, COLS - 1, 26, t, m)
     # bottom row
     pane(ui, 0, 27, 127, ROWS - 2, "1:journal :: world-core", active=True)
-    render_log(ui, 2, 28, 125, ROWS - 3, JOURNAL + worldmon_lines(t, m), t, cps=70)
+    render_log(ui, 2, 28, 125, ROWS - 3, JOURNAL + worldmon_lines(t, m), t)
     net_pane(ui, 128, 27, COLS - 1, ROWS - 2, t, m)
-    flash = 0.0
-    for e in logs.SCENE_D:
-        if e[2] == "big" and 0 <= t - e[0] < 0.20:
-            flash = 0.45 * (1 - (t - e[0]) / 0.20)
-    return flash, 0.0
 
 
 def draw(ui, t):
     m = CLUSTER.metrics(t)
     if t < 2.9:
-        flash, glitch = scene_boot_full(ui, t, m)
+        scene_boot_full(ui, t, m)
         windows, active = ["bash", "journal", "bmc", "thermal", "ibmon"], 0
     elif t < 8.6:
-        flash, glitch = scene_split2(ui, t, m)
+        scene_split2(ui, t, m)
         windows, active = ["world", "journal", "bmc", "thermal", "ibmon"], 0
     elif t < 13.9:
-        flash, glitch = scene_split3(ui, t, m)
+        scene_split3(ui, t, m)
         windows, active = ["console", "journal", "nvtop", "thermal", "ibmon"], 0
     elif t < 30.0:
-        flash, glitch = scene_dashboard(ui, t, m)
+        scene_dashboard(ui, t, m)
         windows, active = ["console", "journal", "nvtop", "thermal", "ibmon"], 1
     else:
         import acts
-        flash, glitch = acts.draw(ui, t, m)
+        acts.draw(ui, t, m)
         windows, active = acts.windows(t)
     status_bar(ui, t, windows, active)
     footer(ui, t, m)
-    return flash, glitch, m
+    return m

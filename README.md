@@ -48,6 +48,9 @@ skip straight to `render.py`. Regenerate from source with `prep_audio.py
 # preview individual frames (seconds into the song)
 python tools/render.py --preview 1 4 11 20 28
 
+# dump the raw character grid as ANSI text (no rasteriser, instant)
+python tools/render.py --grid 45.5 100.2 211
+
 # render a slice
 python tools/render.py --range 0 30 out/slice_boot_30s.mp4
 
@@ -56,9 +59,12 @@ python tools/render.py --video out/world_full.mp4
 
 # OpenGL GPU pipeline (~4× faster); encoder selection
 python tools/render.py --gl --enc nvenc --video out/world_full.mp4
+
+# interactive OpenGL viewer: space, arrows, A/B loop
+python tools/viewer.py --start 88
 ```
 
-Flags: `--preview`, `--range T0 T1`, `--video PATH`, `--out PATH`,
+Flags: `--preview`, `--grid`, `--range T0 T1`, `--video PATH`, `--out PATH`,
 `--jobs N` (CPU worker count), `--serial` (single-process fallback),
 `--enc auto|nvenc|x264`, `--gl` (OpenGL pipeline).
 
@@ -77,6 +83,7 @@ tools/
   align.py       column / pane alignment helpers
   landmask.py    Natural Earth land mask rasteriser
   glrender.py    OpenGL GPU render path (moderngl + NVENC)
+  viewer.py      interactive OpenGL preview (play/scrub/A-B loop)
   prep_audio.py  Phase 1a: decode + reactive signal extraction
   beats.py       Phase 1c: tempo/phase comb search beat grid
   render.py      render driver (preview / range / video)

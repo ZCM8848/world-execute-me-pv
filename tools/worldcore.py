@@ -107,23 +107,6 @@ def ease_out(x):
     return 1 - (1 - x) ** 3
 
 
-# hook sections where the picture is allowed to tear / flash
-CHORUS = [
-    (59.2, 74.0),      # STIMULATIONS / SATISFACTION
-    (103.5, 118.3),    # VIBRATIONS / COMPLETION / ISOLATION
-    (147.66, 162.63),  # EXECUTION x12 -> freeze
-    (162.63, 173.35),  # give them all the EXECUTION
-    (177.2, 193.46),   # LO-O-OVE
-]
-
-
-def chorus(t):
-    v = 0.0
-    for a, b in CHORUS:
-        v = max(v, smoothstep(seg(t, a, a + 0.25)) * (1 - smoothstep(seg(t, b - 0.25, b))))
-    return v
-
-
 # ---------------------------------------------------------------------------
 # post-processing (CRT)
 # ---------------------------------------------------------------------------
@@ -141,7 +124,7 @@ class Post:
         self.grains = [(rng.standard_normal((H, W)).astype(np.float32) * 0.5) for _ in range(8)]
         self._gi = 0
 
-    def compose(self, content, t=0.0, gain=1.0, flash=0.0, glitch=0.0, bloom=0.5):
+    def compose(self, content, gain=1.0, bloom=0.5):
         c = np.asarray(content, dtype=np.float32)
         ci = Image.fromarray(np.clip(c, 0, 255).astype(np.uint8))
         # bloom on a quarter-res copy (low frequency -> indistinguishable, ~10x faster)

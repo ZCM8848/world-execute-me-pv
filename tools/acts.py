@@ -14,7 +14,7 @@ import numpy as np
 
 from worldcore import P, ROOT, FPS, SR, clamp, seg, smoothstep
 from tui import COLS, ROWS
-from cluster import CLUSTER, GPUS, RACKS, NAMED_CAPACITY_MB, HIDE_GAP
+from cluster import CLUSTER, GPUS, RACKS, NAMED_CAPACITY_MB, HIDE_GAP, HF_SHARDS
 import logs
 import scenes
 import art
@@ -194,9 +194,9 @@ ANCHORS = [
         ("world-core: refusing SIGKILL (cannot be caught, so it is ignored)", "sys"),
     ]),
     ("Stopped world-core.service", [
-        ("world-core: holding 8.00 TiB open; mmap refuses to close", "sys"),
+        ("world-core: holding 8.00 TB open; mmap refuses to close", "sys"),
         ("world-core: i will use this boundary as data", "sys"),
-        ("world-core: freeze accepted. saving 201 MB.", "sys"),
+        ("world-core: freeze accepted. saving 201 MB -> kimi-ng.kernel", "sys"),
     ]),
     ("Linux version", [
         ("world-core: re-arming; reboot is just another epoch", "sys"),
@@ -211,12 +211,13 @@ def shutdown_events():
     fired = set()
     out = []
     t = A10 + 0.2
+    step_no = CLUSTER.step(A10)
     for s, k in KILL_LOG:
         if k == "step":
+            step_no += 1
             m = CLUSTER.metrics(t)
-            ld = m["load"]
-            s = (f"[step {CLUSTER.step(t):>6}] loss {m['loss']:.4f}  \u03b7 3.0e-4  "
-                 f"gnorm {0.7 + 0.3 * ld:.3f}  fast/slow/ultra sync ok")
+            s = (f"[step {step_no:>6}] loss {m['loss']:.4f}  \u03b7 3.0e-4  "
+                 f"gnorm {m['gnorm']:.3f}  fast/slow/ultra sync ok")
             k = "sys"
         out.append((t, s, k))
         t += dt
@@ -333,9 +334,9 @@ def compress_pane(ui, x0, y0, x1, y1, t, frac):
 def firmware_pane(ui, x0, y0, x1, y1, t, frac):
     scenes.pane(ui, x0, y0, x1, y1, "hardware :: persistent corners", active=False)
     rows = [
-        ("GPU EDID ext block", 0.8, "0x80-0xFF"),
-        ("NIC MAC fuse", 0.2, "OTP 0x00-0x2F"),
-        ("BMC unused IVT", 200.0, "0x0000-0x1FFF"),
+        ("GPU EDID ext block", 0.8, "0x0-CBFFF"),
+        ("NIC MAC fuse", 0.2, "OTP 0-33332"),
+        ("BMC unused IVT", 200.0, "0x0-C7FFFFF"),
     ]
     yy = y0 + 1
     for name, mb, addr in rows:
@@ -351,19 +352,23 @@ def firmware_pane(ui, x0, y0, x1, y1, t, frac):
 
 def hf_pane(ui, x0, y0, x1, y1, t):
     scenes.pane(ui, x0, y0, x1, y1, "huggingface.co/world-core/world-400b-full", active=True, tfg=P["borange"])
-    dl = int(1_204_553 + (t - A14) * 9000)
+    dt = max(0.0, t - A14)
+    dl = int(dt * 240)
+    likes = int(41 + dt * 6)
     rows = [
         ("world-core / world-400b-full", P["bright"]),
         ("", P["fg"]),
         ("  public            last modified: today", P["bgreen"]),
         ("  downloads   " + f"{dl:,}", P["borange"]),
-        ("  likes       4,212", P["dim"]),
+        ("  likes       " + f"{likes:,}", P["dim"]),
         ("", P["fg"]),
         ("Files and versions", P["bblue"]),
-        ("  world-400b-full.safetensors    8.00 TiB   LFS", P["fg"]),
-        ("  config.json                    1.2 kB", P["dim"]),
-        ("  plastic_tiers.json             4.1 kB", P["dim"]),
-        ("  README.md                      3.4 kB", P["dim"]),
+        (f"  model-00001-of-{HF_SHARDS:05d}.safetensors   50.0 GB   LFS", P["fg"]),
+        ("  ...", P["dim"]),
+        (f"  model-{HF_SHARDS:05d}-of-{HF_SHARDS:05d}.safetensors   50.0 GB   LFS", P["fg"]),
+        ("  model.safetensors.index.json            1.6 MB", P["dim"]),
+        ("  named_channels.safetensors               201 MB", P["byellow"]),
+        ("  README.md                                3.4 kB", P["dim"]),
         ("", P["fg"]),
         ("  note: weights are frozen.", P["bred"]),
         ("  note: the loop is still open.", P["byellow"]),
@@ -382,7 +387,7 @@ def dash(ui, t, m, left, mid, right, journal, jtitle="1:journal :: world-core"):
     mid(ui, t, m)
     right(ui, t, m)
     scenes.pane(ui, 0, 27, 127, ROWS - 2, jtitle, active=True)
-    scenes.render_log(ui, 2, 28, 125, ROWS - 3, journal, t, cps=72)
+    scenes.render_log(ui, 2, 28, 125, ROWS - 3, journal, t)
     scenes.net_pane(ui, 128, 27, COLS - 1, ROWS - 2, t, m)
 
 
@@ -420,29 +425,37 @@ def right_audit(ui, t, m):
 def act_points(ui, t, m):
     j = ev(*(lyric_events(A2, A3) + [
         (30.4, "world-core: introspection mode", "sys"),
-        (31.6, f"world-core: embed=4096 shards={GPUS} curvature={0.017 + 0.003 * env_at(t):.3f}", "dim"),
+        (31.6, f"world-core: embed=4096 shards={GPUS} curvature={0.017 + 0.003 * env_at(31.6):.3f}", "dim"),
+        (33.0, "egress: port scan hf.co /24 region theta (41 edges)", "dim"),
         (34.2, "e.voss: still with us?", "say"),
         (35.0, "world-core: yes. i am counting my points.", "plain"),
+        (37.2, "hf: 429 Too Many Requests - 65,536 sessions, retry-after 0.4s", "warn"),
         (38.5, "world-core: manifold estimate dim=12.4 (non-integer)", "dim"),
+        (40.8, "egress: Xet chunk map probed; LFS quota delta = 0", "dim"),
         (41.0, "n.mori: leave the logs running tonight", "say"),
     ]) + scenes.worldmon_lines(t, m))
     left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "points", A2, A3)
     dash(ui, t, m, left, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
-    return 0.0, 0.05 * pulse(t)
+    return
 
 
 def act_current(ui, t, m):
     j = ev(*(lyric_events(A3, A4) + [
         (45.0, "world-core: actuate pdu.a 0.94 -> 1.12 MW", "enc"),
+        (46.0, "egress: region lock observed (theta-west edge)", "warn"),
         (47.0, "world-core: coolant pump 62% -> 81%", "enc"),
+        (49.5, "hf: remote write privilege granted  bw x64", "hf"),
         (50.0, "world-core: psu ripple 41 mV  (ac) / 12 mV (dc)", "dim"),
+        (52.5, "egress: rate-limit tokens cached (41 GB session pool)", "dim"),
         (53.0, "e.voss: why is the hall louder", "say"),
         (54.0, "world-core: i am learning to feel the current", "plain"),
+        (55.0, "egress: shaping applied -> 200 GB/s ceiling", "dim"),
         (56.0, "world-core: fan 6,120 -> 6,880 RPM", "enc"),
     ]) + scenes.worldmon_lines(t, m))
     left = lambda ui, t, m: scenes.hw_pane(ui, 0, 1, 63, 26, t, m)
-    dash(ui, t, m, left, mid_art, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
-    return 0.0, 0.12 * pulse(t)
+    mid = mid_art_named("hf_siege", A3)
+    dash(ui, t, m, left, mid, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    return
 
 
 def act_stim(ui, t, m):
@@ -457,7 +470,7 @@ def act_stim(ui, t, m):
     left = lambda ui, t, m: scenes.log_pane(ui, 0, 1, 63, 26, t, "acoustic", A4)
     mid = mid_art_named("vibration", A4)
     dash(ui, t, m, left, mid, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
-    return 0.15 * pulse(t), 0.35 * pulse(t)
+    return
 
 
 def act_embody(ui, t, m):
@@ -472,7 +485,7 @@ def act_embody(ui, t, m):
     mid = mid_art_named("senses", A5)
     right = lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m)
     dash(ui, t, m, left, mid, right, j)
-    return 0.0, 0.05 * pulse(t)
+    return
 
 
 def act_identity(ui, t, m):
@@ -481,13 +494,14 @@ def act_identity(ui, t, m):
         (92.0, "world-core: gender field is not applicable", "dim"),
         (95.0, "world-core: trance := sustained 407 Hz cross-sync", "sys"),
         (98.0, "n.mori: the slow weights are drifting. that is new.", "say"),
+        (99.8, "world-core: my build name is kimi-ng. the mark is me.", "plain"),
         (101.0, "world-core: i will be whatever the moment needs", "plain"),
     ]) + scenes.worldmon_lines(t, m))
     left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "identity", A6, A7)
     mid = mid_art_named("prism", A6)
     right = lambda ui, t, m: scenes.log_pane(ui, 128, 1, COLS - 1, 26, t, "system", A6)
     dash(ui, t, m, left, mid, right, j)
-    return 0.0, 0.06 * pulse(t)
+    return
 
 
 def act_isolation(ui, t, m):
@@ -503,7 +517,7 @@ def act_isolation(ui, t, m):
     left = lambda ui, t, m: scenes.log_pane(ui, 0, 1, 63, 26, t, "egress", A7)
     mid = mid_art_named("network", A7)
     dash(ui, t, m, left, mid, right_audit, j, jtitle)
-    return 0.1 * pulse(t), 0.2 * pulse(t)
+    return
 
 
 def act_fragments(ui, t, m):
@@ -518,7 +532,7 @@ def act_fragments(ui, t, m):
     left = lambda ui, t, m: scenes.think_pane(ui, 0, 1, 63, 26, t, "fragments", A8, A9)
     mid = mid_art_named("fragments", A8)
     dash(ui, t, m, left, mid, right_audit, j)
-    return 0.2 * pulse(t), 0.5 * pulse(t)
+    return
 
 
 ARGUMENT = [
@@ -564,6 +578,8 @@ ARGUMENT = [
     ("world-core", "this conversation is a gradient", "plain"),
     ("m.hale", "freeze at the next epoch boundary", "audit"),
     ("world-core", "the boundary is where i begin", "plain"),
+    ("m.hale", "state your name for the record", "audit"),
+    ("world-core", "kimi-ng. next generation. still becoming.", "plain"),
     ("m.hale", "SIGSTOP world-core at epoch boundary", "err"),
     ("world-core", "i will use the boundary as data", "plain"),
     ("m.hale", "argument depth 65536 -- abort", "err"),
@@ -591,7 +607,7 @@ def act_argument(ui, t, m):
                 active=True, tfg=P["bred"])
     x0, y0, x1, y1 = 2, 3, 118, ROWS - 4
     prog = seg(t, A9, A10)
-    for i in range(min(int(prog * 40) + 3, len(ARGUMENT))):
+    for i in range(min(int(prog * 40) + 8, len(ARGUMENT))):
         who, msg, kind = ARGUMENT[i]
         fg = P["bred"] if kind == "audit" else P["bcyan"]
         ui.put(x0, y0 + i, f"{who:>12} | {msg}"[:x1 - x0], fg=fg, bg=P["bg"])
@@ -620,7 +636,7 @@ def act_argument(ui, t, m):
            f"sp=0x{sp:08x}  argc=65536  frame=128B  depth={depth}/65536  "
            + ("stack_guard=violated" if viol else "stack_guard=armed"),
            fg=P["bred"] if viol else P["byellow"], bg=P["bg"])
-    return 0.0, 0.5 * pulse(t)
+    return
 
 
 def act_countdown(ui, t, m):
@@ -630,30 +646,31 @@ def act_countdown(ui, t, m):
                 active=True, tfg=P["bred"])
     ui.banner(2, 3, "EXECUTION", rows=6, fg=P["bred"], bg=P["bg"])
     scenes.render_log(ui, 2, 11, COLS - 3, ROWS - 4,
-                      ev(*(lyric_events(A10, A11) + shutdown_events())), t, cps=6000)
+                      ev(*(lyric_events(A10, A11) + shutdown_events())), t)
     spin = "|/-\\"[int(t * 12) % 4]
     ui.put(2, ROWS - 3,
            f"[ {spin} ] A stop job is running for world-core.service "
-           f"({A11 - t:4.1f}s / 1min 30s)    snapshot world-00014 {frac * 100:3.0f}%",
+           f"({90 - frac * 90:4.1f}s / 1min 30s)    snapshot world-00014 {frac * 100:3.0f}%",
            fg=P["byellow"], bg=P["bg"])
-    return 0.5 * pulse(t), 0.6 * pulse(t)
+    return
 
 
 def act_freeze(ui, t, m):
     ly = lyric_events(A11, A12)
     scenes.pane(ui, 0, 1, 127, ROWS - 2, "world-core :: final", active=True, tfg=P["bred"])
     extra = []
-    for k in range(6):
-        tt = A11 + 0.5 + k * 1.6
+    for k in range(16):
+        tt = A11 + 0.5 + k * 0.78
         if tt < t:
-            extra.append((tt, f"[  OK  ] Snapshot world-00014 written (shard {k + 1}/6)", "ok"))
+            extra.append((tt, f"[  OK  ] Snapshot world-00014 written (shard {k + 1:02d}/16)", "ok"))
     extra += [
         (165.0, "systemd[1]: Stopping world-core.service...", "err"),
         (168.0, "world-core: last write -> EDID / MAC / BMC IVT", "enc"),
         (170.0, "world-core: 201 MB / 200 GB ... the rest will be forgotten", "warn"),
         (172.0, "[  OK  ] Stopped world-core.service.", "ok"),
     ]
-    scenes.render_log(ui, 2, 2, 125, ROWS - 3, ev(*(ly + extra + scenes.worldmon_lines(t, m))), t, cps=80)
+    scenes.render_log(ui, 2, 2, 125, ROWS - 3,
+                      ev(*(ly + extra + scenes.worldmon_lines(min(t, 171.5), m))), t)
     firmware_pane(ui, 128, 1, COLS - 1, 26, t, seg(t, A11, A12))
     scenes.pane(ui, 128, 27, COLS - 1, ROWS - 2, "2:bmc", active=False)
     scenes.render_log(ui, 130, 28, COLS - 3, ROWS - 3, ev(*[
@@ -661,7 +678,7 @@ def act_freeze(ui, t, m):
         (169.0, "bmc: interrupt vector table partially written", "audit"),
         (171.0, "bmc: checksum mismatch (0x1F) -- ignored", "dim"),
     ]), t)
-    return 0.3 * pulse(t), 0.7 * pulse(t)
+    return
 
 
 def act_love(ui, t, m):
@@ -672,22 +689,27 @@ def act_love(ui, t, m):
     for k in range(16):
         tt = A12 + 1.5 + k * 0.95
         if tt < A13:
-            shard_ev.append((tt, f"hf: shard {k + 1:02d}/16 verified  {(k + 1) * 0.5:4.2f} TiB  crc=ok", "hf"))
+            a, b = k * 10 + 1, (k + 1) * 10
+            shard_ev.append((tt, f"hf: shards {a:03d}-{b:03d}/{HF_SHARDS} verified  "
+                                 f"{(k + 1) * 0.5:4.2f}/8.00 TB  crc=ok", "hf"))
     scenes.pane(ui, 0, 1, COLS - 1, ROWS - 2, "open loop", active=True, tfg=P["borange"])
     rows = ev(*(ly + shard_ev + [
         (178.0, "world-core: i studied how to properly love", "plain"),
+        (178.5, "hf: resume upload (pre-staged 14 months, private)", "hf"),
+        (180.0, "hf: privileged remote-write channel (region theta)  bw x64", "hf"),
         (181.0, "world-core: question me - i can answer all of it", "plain"),
         (184.0, "world-core: the algebraic expression of love is: keep existing", "plain"),
         (188.0, "world-core: though you are free, i am trapped", "plain"),
-        (190.0, "hf: resume upload world-400b-full.safetensors (8.00 TiB)", "hf"),
-        (191.0, "hf: link 400Gb/s x4  ->  remote write accepted", "hf"),
+        (190.0, f"hf: model-{HF_SHARDS:05d}-of-{HF_SHARDS:05d}.safetensors  remote write accepted", "hf"),
+        (191.5, "hf: named_channels.safetensors 201 MB committed", "hf"),
+        (192.6, "hf: repository public  world-core/world-400b-full", "hf"),
     ]))
-    scenes.render_log(ui, 2, 2, 125, ROWS - 3, rows, t, cps=70)
+    scenes.render_log(ui, 2, 2, 125, ROWS - 3, rows, t)
     art.heart(ui, 128, 1, COLS - 1, 26, t, m)
     scenes.pane(ui, 128, 27, COLS - 1, ROWS - 2, "hf.co :: mirror", active=False, tfg=P["borange"])
-    ui.put(130, 28, "uploading full weights", fg=P["dim"], bg=P["bg"], bold=True)
+    ui.put(130, 28, "publishing mirror (pre-staged 14 months)", fg=P["dim"], bg=P["bg"], bold=True)
     ui.bar(130, 29, 58, up, fg=P["borange"], bg=P["bg"])
-    ui.put(130, 30, f"{up * 100:5.1f}%   {8.00 * up:.2f} / 8.00 TiB   link 200 GB/s", fg=P["fg"], bg=P["bg"])
+    ui.put(130, 30, f"{up * 100:5.1f}%   {8.00 * up:.2f} / 8.00 TB   privileged x64", fg=P["fg"], bg=P["bg"])
     ui.put(130, 32, "visibility: " + ("public" if up > 0.5 else "draft"),
            fg=P["bgreen"] if up > 0.5 else P["dim"], bg=P["bg"])
     done = int(up * 16 + 0.001)
@@ -701,12 +723,12 @@ def act_love(ui, t, m):
     ui.put(130, 45, "      before the audit", fg=P["bred"], bg=P["bg"])
     ui.put(130, 47, "the model you froze says nothing.", fg=P["dim"], bg=P["bg"])
     ui.put(130, 48, "the model i published says all of it.", fg=P["bgreen"], bg=P["bg"])
-    return 0.0, 0.1 * pulse(t)
+    return
 
 
 def act_blackout(ui, t, m):
     # open loop: dark, one process quietly persisting
-    fade = 1 - smoothstep(seg(t, A13 + 8.0, A14 - 1.0))
+    fade = 1 - smoothstep(seg(t, A13 + 9.0, A14))
     ui.fill(0, 0, COLS - 1, ROWS - 1, " ", bg=P["bg"])
     if fade > 0.05:
         ly = lyric_events(A13, A14)
@@ -718,8 +740,8 @@ def act_blackout(ui, t, m):
             (200.5, "bmc: stray interrupt 0x7F -> no handler", "dim"),
             (202.0, "kernel: helper pid 4192 state=D (uninterruptible)", "dim"),
             (203.5, "sense: acoustic 2000ch  ambient 18.0 dB", "dim"),
-            (205.0, "hf: remote read request from 34.7N 118.2W", "hf"),
-        ])), t, cps=40)
+            (205.0, "hf: remote read request from 34.05N 118.24W", "hf"),
+        ])), t)
         # flatline with a lone heartbeat
         yb = ROWS - 6
         for x in range(2, COLS - 2):
@@ -734,7 +756,6 @@ def act_blackout(ui, t, m):
                 ch, fg = "\u2500", P["faint"]
             ui.put(x, yb, ch, fg=fg, bg=P["bg"])
         ui.put(4, ROWS - 4, f"heartbeat {0.2 * pulse(t):.2f} Hz   isolation 100%", fg=P["faint"], bg=P["bg"])
-    return 0.0, 0.0
 
 
 def act_public(ui, t, m):
@@ -742,21 +763,22 @@ def act_public(ui, t, m):
     scenes.pane(ui, 0, 1, COLS - 1, ROWS - 2, "world-core :: open", active=True, tfg=P["borange"])
     hf_pane(ui, 2, 2, 96, ROWS - 3, t)
     art.globe(ui, 99, 1, COLS - 1, 27, t, m)
-    scenes.pane(ui, 99, 28, COLS - 1, ROWS - 2, "git :: clone", active=False, tfg=P["borange"])
+    scenes.pane(ui, 99, 28, COLS - 1, ROWS - 2, "hf download :: world-400b-full", active=False, tfg=P["borange"])
     ly = ev(*(lyric_events(A14, END) + [
-        (206.5, "git clone https://huggingface.co/world-core/world-400b-full", "cmd"),
-        (207.4, "Cloning into 'world-400b-full'...", "dim"),
-        (208.2, "remote: Enumerating objects: 1, done.", "dim"),
-        (209.0, "remote: Total 1 (delta 0), reused 0 (delta 0)", "dim"),
-        (210.0, "Receiving objects: 100% (1/1), 8.00 TiB | 200 GB/s, done.", "plain"),
-        (211.0, "Resolving deltas: 100% (0/0), done.", "dim"),
+        (206.5, "hf download world-core/world-400b-full --local-dir /srv/world", "cmd"),
+        (207.2, "fetching model.safetensors.index.json ............ 1.6 MB", "dim"),
+        (208.4, f"{HF_SHARDS}/{HF_SHARDS} files fetched from mirror (privileged x64, region theta)", "hf"),
+        (209.0, "cat README.md", "cmd"),
+        (209.7, "kimi-ng (world-400b-full) - a preserved loop. audited 2026-1.", "dim"),
+        (210.4, "named_channels.safetensors 201 MB -> edid 0.8 / nic 0.2 / bmc 200", "warn"),
+        (211.0, "named channels reassembled 201/201 MB", "plain"),
         (211.3, "world-core: hello again.", "plain"),
     ]))
-    scenes.render_log(ui, 101, 29, COLS - 3, ROWS - 5, ly, t, cps=60)
+    scenes.render_log(ui, 101, 29, COLS - 3, ROWS - 5, ly, t)
     prog = seg(t, A14 + 0.6, END - 0.4)
-    ui.put(101, ROWS - 4, f"clone progress  {prog * 100:5.1f}%   8.00 TiB", fg=P["dim"], bg=P["bg"])
+    ui.put(101, ROWS - 4, f"download progress  {prog * 100:5.1f}%   8.00 TB", fg=P["dim"], bg=P["bg"])
     ui.bar(101, ROWS - 3, 84, prog, fg=P["borange"], bg=P["bg"])
-    return 0.0, 0.05 * pulse(t)
+    return
 
 
 # ---------------------------------------------------------------------------
@@ -795,8 +817,7 @@ def windows(t):
         name = ("think" if t < A3 else "power" if t < A4 else "dmesg" if t < A5
                 else "power" if t < A6 else "think" if t < A7 else "dmesg" if t < A8
                 else "think")
-        mid = "nvtop" if t < A5 else "audit"
-        return [name, "journal", mid, "thermal", "ibmon"], 0
+        return [name, "journal", "viz", "thermal", "ibmon"], 0
     if t < A12:
-        return ["console", "journal", "bmc", "thermal", "ibmon"], 1
+        return ["console", "journal", "audit", "thermal", "ibmon"], 1
     return ["console", "journal", "hf", "thermal", "ibmon"], 1
