@@ -10,8 +10,8 @@ import numpy as np
 
 from worldcore import P, ROOT
 from tui import COLS, ROWS
-from cluster import CLUSTER, RACKS, GPUS, SVC_NODES, CAPEX, TCO, SYNC, TENSOR, \
-    SYNC_SPAN, PARAM_BYTES, SENSORS, ACOUSTIC, TELEMETRY
+from cluster import CLUSTER, RACKS, GPUS, GPU_NODES, TOTAL_NODES, CAPEX, TCO, SYNC, \
+    TENSOR, SYNC_SPAN, PARAM_BYTES, SENSORS, ACOUSTIC, TELEMETRY
 import logs
 import art
 
@@ -24,7 +24,7 @@ LY_MARK = P["bcyan"]
 BIG_BG = P["bwhite"]
 BIG_FG = (10, 10, 10)
 
-PROMPT = "e.voss@theta-svc-00:~$"
+PROMPT = "e.voss@theta-gpu-000:~$"
 
 STYLE_FG = {
     "plain": P["fg"],
@@ -205,13 +205,13 @@ DMESG = build_dmesg()
 # panel widgets
 # ---------------------------------------------------------------------------
 def htop_pane(ui, x0, y0, x1, y1, t, m):
-    pane(ui, x0, y0, x1, y1, "htop :: theta-svc-00", active=(t < 20))
+    pane(ui, x0, y0, x1, y1, "htop :: theta-gpu-000", active=(t < 20))
     xx, yy = x0 + 2, y0 + 1
     load = 0.4 + 3.1 * m["load"]
     up = int(t) + 426 * 86400 + 14 * 60
     ui.put(xx, yy, f"CPU  {m['util'] * 100:4.1f}%   load {load:.2f} {load * 0.8:.2f} {load * 1.1:.2f}", fg=P["bcyan"], bg=P["bg"])
     ui.put(xx, yy + 1, f"Mem  1.82T/2.00T    Swap 0K/0K    Tasks 4126, 12 thr; 3 run", fg=P["dim"], bg=P["bg"])
-    ui.put(xx, yy + 2, f"Up {up // 86400}d {up // 3600 % 24}:{up // 60 % 60:02d}   {SVC_NODES} nodes   {GPUS} gpu", fg=P["dim"], bg=P["bg"])
+    ui.put(xx, yy + 2, f"Up {up // 86400}d {up // 3600 % 24}:{up // 60 % 60:02d}   {GPU_NODES} gpu nodes   8 local   {GPUS} gpu", fg=P["dim"], bg=P["bg"])
     ui.line = None
     # core bars, two columns
     n = 24
@@ -239,7 +239,7 @@ def htop_pane(ui, x0, y0, x1, y1, t, m):
 
 
 def nvtop_pane(ui, x0, y0, x1, y1, t, m):
-    pane(ui, x0, y0, x1, y1, "nvtop :: 8/864 x B300", active=(20 <= t < 40))
+    pane(ui, x0, y0, x1, y1, "nvtop :: theta-gpu-000 / 8 x B300", active=(20 <= t < 40))
     xx, yy = x0 + 2, y0 + 1
     utils = CLUSTER.gpu_utils(t, 8)
     temps = CLUSTER.gpu_temps(t, 8)
@@ -259,8 +259,9 @@ def nvtop_pane(ui, x0, y0, x1, y1, t, m):
         ui.put(pctx, row, f"{utils[i] * 100:4.0f}%", fg=P["fg"], bg=P["bg"])
         ui.put(tmpc, row, f"{temps[i]:6.1f}\u00b0C", fg=P["fg"], bg=P["bg"])
     row = yy + 2 + len(logs.NVDEV)
-    ui.put(xx, row, f"total   {m['power']:.2f} MW    util {m['util'] * 100:.1f}%    {GPUS} GPUs online {int(m['online'] * 100)}%", fg=P["byellow"], bg=P["bg"])
-    ui.put(xx, row + 1, f"NVLink 5  intra-rack 1.8 TB/s   IB NDR 4/4 up   400 Gb/s", fg=P["dim"], bg=P["bg"])
+    pwrnode = m["power"] / TOTAL_NODES * 1000.0
+    ui.put(xx, row, f"node {pwrnode:4.1f} kW   util {m['util'] * 100:4.1f}%   8 local   online {int(m['online'] * 100):3d}%", fg=P["byellow"], bg=P["bg"])
+    ui.put(xx, row + 1, f"NVLink 5  8-GPU mesh 1.8 TB/s   IB NDR 4/4   400 Gb/s", fg=P["dim"], bg=P["bg"])
 
 
 def thermal_pane(ui, x0, y0, x1, y1, t, m):
@@ -398,11 +399,33 @@ def worldmon_lines(t, m):
     return c["out"]
 
 
+_HF = {"k": -1, "out": []}
+HF_RATE = 46.0  # siege log lines per second: enough to bury the pane
+
+
+def hf_attack_lines(t, t0):
+    """High-volume hf.co siege log stream (act_current), cached and extended."""
+    k0 = int((t - t0) * HF_RATE)
+    if k0 < 0:
+        return []
+    c = _HF
+    if c["k"] > k0:
+        c["k"], c["out"] = -1, []
+    for j in range(c["k"] + 1, k0 + 1):
+        h = (j * 2654435761) & 0xFFFFFFFF
+        tmpl, kind = logs.HF_ATTACK[j % len(logs.HF_ATTACK)]
+        line = tmpl.format(e=h % 9, n=(h >> 5) % 65536, ms=(h >> 3) % 900,
+                           sid=100000 + (h >> 9) % 900000)
+        c["out"].append((round(t0 + j / HF_RATE, 3), f"egress[{j:05d}] {line}", kind))
+    c["k"] = k0
+    return c["out"]
+
+
 # ---------------------------------------------------------------------------
 # scenes
 # ---------------------------------------------------------------------------
 def scene_boot_full(ui, t, m):
-    pane(ui, 0, 1, COLS - 1, ROWS - 2, "theta-svc-00 :: console (ttyS0)", active=True)
+    pane(ui, 0, 1, COLS - 1, ROWS - 2, "theta-gpu-000 :: console (ttyS0)", active=True)
     render_log(ui, 2, 2, COLS - 3, ROWS - 3, CONSOLE, t)
 
 

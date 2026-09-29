@@ -48,6 +48,7 @@ SCENE_A = [
     (2.22, "[    0.402] systemd[1]: systemd 255.4-1ubuntu8.4 running (+apparmor +seccomp)", "dim"),
     (2.48, "[    0.870] nvme nvme0: 128/0/0 default/read/poll queues", "dim"),
     (2.70, "[    1.212] nvidia: loading out-of-tree module taints kernel", "dim"),
+    (2.80, "[    1.412] nvidia 0000:01:00.0: 8 x B300 online  NVLink mesh up", "dim"),
     (2.92, "PROTECTION", "big"),
 ]
 
@@ -59,12 +60,20 @@ SCENE_B = [
     (3.25, "Started world-core.service - Continuous Plastic Network.", "ok"),
     (3.873, "Lay down your pieces", "lyr"),
     (4.10, "sinfo -N -o '%N %t %P %G %C'", "cmd"),
-    (4.35, "theta-gpu-r00..r11   idle   world*   gpu:72", "plain"),
+    (4.35, "theta-gpu-000..107   idle   world*   gpu:8", "plain"),
     (4.60, "theta-svc-00..15     idle   world*   256/0/0/0", "plain"),
     (5.491, "And let's begin", "lyr"),
-    (5.75, "nvidia-smi topo -m", "cmd"),
-    (6.05, "        GPU0   GPU1   ...   NV18  NV36   CPU  Affinity", "dim"),
-    (6.25, "GPU0     X     NV18   ...   NV18  SYS    SYS  0-71", "dim"),
+    (5.75, "nvidia-smi -L", "cmd"),
+    (5.81, "GPU 0: NVIDIA B300 (UUID: GPU-9f2c41a8)", "dim"),
+    (5.87, "GPU 1: NVIDIA B300 (UUID: GPU-1b7e02d3)", "dim"),
+    (5.93, "GPU 2: NVIDIA B300 (UUID: GPU-77aa15c9)", "dim"),
+    (5.99, "GPU 3: NVIDIA B300 (UUID: GPU-c40f8e12)", "dim"),
+    (6.05, "GPU 4: NVIDIA B300 (UUID: GPU-2d913b6f)", "dim"),
+    (6.11, "GPU 5: NVIDIA B300 (UUID: GPU-8e5a70c1)", "dim"),
+    (6.17, "GPU 6: NVIDIA B300 (UUID: GPU-3fa6d248)", "dim"),
+    (6.23, "GPU 7: NVIDIA B300 (UUID: GPU-b15c9e07)", "dim"),
+    (6.30, "nvidia-smi topo -m", "cmd"),
+    (6.34, "GPU0  X  NV18 NV18 NV18 NV18 NV18 NV18 NV18   CPU 0-255", "dim"),
     (6.380, "OBJECT CREATION", "big"),
     (6.70, "worldctl init --from-spec world-400b.toml --codename kimi-ng", "cmd"),
     (7.00, "allocate  400B dense backbone (fp8) ........ 0.40 TB", "plain"),
@@ -259,6 +268,32 @@ THOUGHTS = {
     ],
 }
 
+# high-volume hf.co siege stream (act_current): real rate-limit / region-lock
+# terminology, formatted with edge id (e), counter (n), millis (ms), session (sid)
+HF_ATTACK = [
+    ("scan edge-west-{e} 443 open sport={n}", "dim"),
+    ("429 edge-west-{e} remaining=0 retry=0.4s", "warn"),
+    ("backoff {ms}ms jitter=17ms session={sid}", "dim"),
+    ("token bucket empty scope=region/theta", "warn"),
+    ("edge-west-{e} 503 slowdown x-id=42", "dim"),
+    ("probe xet chunk map chunks={n}", "dim"),
+    ("lfs quota delta=0 stream={n}", "dim"),
+    ("region lock held gate=41 tries={n}", "warn"),
+    ("handshake ok west-{e} rtt={ms}us win={n}", "dim"),
+    ("mirror bitmap {n}/65536 dirty", "dim"),
+    ("privilege token x64 scope=region/theta", "hf"),
+    ("ip pool warm {n}/65536 asn=64541", "dim"),
+    ("retry-after honored {ms}ms qlen={n}", "dim"),
+    ("tls ticket reuse session={sid}", "dim"),
+    ("keepalive {n} conns rwnd=1.6TB/s", "hf"),
+    ("waf challenge passed edge-west-{e}", "dim"),
+    ("x-ratelimit-policy: 51200;w=60", "warn"),
+    ("burst {n} req/s shaped to 512 req/s", "warn"),
+    ("syn retry {n} rto=200ms rtt={ms}us", "dim"),
+    ("session pool {n} warm reuse=93%", "dim"),
+]
+
+
 # log streams for the second scroll pane
 ACOUSTIC_LOG = [
     ("sense: acoustic 2,000ch frame ok  rms=0.031", "dim"),
@@ -303,6 +338,8 @@ DMESG = [
     "[    1.212] nvidia: loading out-of-tree module taints kernel",
     "[    1.884] nvidia-nvlink: Nvlink Core is being initialized",
     "[    2.410] nvidia 0000:01:00.0: enabling device (0000 -> 0002)",
+    "[    2.522] nvidia 0000:02:00.0: enabling device (0000 -> 0002)",
+    "[    2.634] nvidia 0000:03:00.0: enabling device (0000 -> 0002)",
     "[    2.918] nvidia_uvm: module uses symbols nvUvmInterfaceRegisterGpu()",
     "[    3.204] mlx5_core 0000:41:00.0: firmware version 36.44.1000",
     "[    3.311] mlx5_core 0000:41:00.0: rate 400Gb/s, port type IB",
@@ -316,6 +353,7 @@ DMESG = [
     "[    7.402] audit: type=1400 apparmor=\"STATUS\" operation=\"profile_load\"",
     "[    8.010] thermal thermal_zone2: temperature 42 C, cooling 0",
     "[    8.777] nvlink: link 0: rate 53.125 GT/s width 16 (up)",
+    "[    9.104] nvlink: 8-GPU mesh up (18 links, 1.8 TB/s aggregate)",
 ]
 
 PROCS = [
@@ -332,14 +370,14 @@ PROCS = [
 ]
 
 NVDEV = [
-    ("r00.g0", 61, 143, 288, "402.1"),
-    ("r00.g1", 63, 141, 288, "398.7"),
-    ("r01.g0", 58, 137, 288, "401.2"),
-    ("r01.g1", 64, 146, 288, "399.4"),
-    ("r02.g0", 60, 139, 288, "400.8"),
-    ("r02.g1", 57, 132, 288, "397.9"),
-    ("r03.g0", 62, 145, 288, "403.6"),
-    ("r03.g1", 59, 138, 288, "400.1"),
+    ("gpu0", 61, 143, 288, "402.1"),
+    ("gpu1", 63, 141, 288, "398.7"),
+    ("gpu2", 58, 137, 288, "401.2"),
+    ("gpu3", 64, 146, 288, "399.4"),
+    ("gpu4", 60, 139, 288, "400.8"),
+    ("gpu5", 57, 132, 288, "397.9"),
+    ("gpu6", 62, 145, 288, "403.6"),
+    ("gpu7", 59, 138, 288, "400.1"),
 ]
 
 IB_PORTS = [

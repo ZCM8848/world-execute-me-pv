@@ -39,7 +39,7 @@ def build_frame():
     t.box(lx0, ly0, lx1, ly1, fg=P["faint"], bg=PN, title="world-core :: boot", tfg=WH)
 
     t.put(3, 2, "Ubuntu 24.04.2 LTS", fg=WH, bg=PN, bold=True)
-    t.put(3 + 20, 2, "theta-svc-00", fg=CY, bg=PN)
+    t.put(3 + 20, 2, "theta-gpu-000", fg=CY, bg=PN)
     t.put(3 + 34, 2, "ttyS0", fg=DIM, bg=PN)
     t.put(lx1 - 33, 2, "kernel 6.11.0-24-generic", fg=DIM, bg=PN)
 
@@ -56,7 +56,7 @@ def build_frame():
     ok(13, 3, "Mounted /secure/seal (luks-\u03b8-root).")
     ok(14, 3, "Started world-core.service - Continuous Plastic Network.")
 
-    t.put(3, 16, "e.voss@theta-svc-00", fg=GR, bg=PN, bold=True)
+    t.put(3, 16, "e.voss@theta-gpu-000", fg=GR, bg=PN, bold=True)
     t.put(22, 16, ":~$", fg=WH, bg=PN)
     t.put(27, 16, "worldctl protection enable --mode seal", fg=BR, bg=PN)
 

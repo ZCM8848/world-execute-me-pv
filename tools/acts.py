@@ -395,6 +395,12 @@ def mid_nvtop(ui, t, m):
     scenes.nvtop_pane(ui, 64, 1, 127, 26, t, m)
 
 
+def mid_egress(ui, t, m):
+    scenes.pane(ui, 64, 1, 127, 26, "egress :: hf.co (theta-west)",
+                active=True, tfg=P["byellow"])
+    scenes.render_log(ui, 66, 3, 125, 25, scenes.hf_attack_lines(t, A3), t)
+
+
 def mid_latent(focus):
     return lambda ui, t, m: latent_pane(ui, 64, 1, 127, 26, t, focus)
 
@@ -453,8 +459,7 @@ def act_current(ui, t, m):
         (56.0, "world-core: fan 6,120 -> 6,880 RPM", "enc"),
     ]) + scenes.worldmon_lines(t, m))
     left = lambda ui, t, m: scenes.hw_pane(ui, 0, 1, 63, 26, t, m)
-    mid = mid_art_named("hf_siege", A3)
-    dash(ui, t, m, left, mid, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
+    dash(ui, t, m, left, mid_egress, lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m), j)
     return
 
 
@@ -817,7 +822,8 @@ def windows(t):
         name = ("think" if t < A3 else "power" if t < A4 else "dmesg" if t < A5
                 else "power" if t < A6 else "think" if t < A7 else "dmesg" if t < A8
                 else "think")
-        return [name, "journal", "viz", "thermal", "ibmon"], 0
+        mid = "egress" if t < A4 else "viz"
+        return [name, "journal", mid, "thermal", "ibmon"], 0
     if t < A12:
         return ["console", "journal", "audit", "thermal", "ibmon"], 1
     return ["console", "journal", "hf", "thermal", "ibmon"], 1

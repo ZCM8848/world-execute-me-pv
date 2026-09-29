@@ -2,9 +2,9 @@
 
 Deterministic (no RNG state leaks between frames) simulated telemetry for the
 S1 "minimum viable" spec from the feasibility audit, re-denominated to
-GB300 + Xeon 6 hardware:
+B300 + Xeon 6 hardware:
 
-    12 x GB300 NVL72 racks  = 864 x B300 (288 GB HBM3e)  ~= 1,944 H100-eq
+    12 racks x 9 x 8-GPU B300 servers = 864 x B300 (288 GB HBM3e) ~= 1,944 H100-eq
     16 x Xeon 6 service nodes, 8 x storage nodes
     1.9 MW geothermal+hydro, PUE 1.20, 41 USD/MWh
 """
@@ -15,10 +15,14 @@ import numpy as np
 from worldcore import clamp, smoothstep, seg
 
 RACKS = 12
-GPUS_PER_RACK = 72
-GPUS = RACKS * GPUS_PER_RACK          # 864
+NODES_PER_RACK = 9
+GPUS_PER_NODE = 8
+GPUS_PER_RACK = NODES_PER_RACK * GPUS_PER_NODE     # 72
+GPUS = RACKS * GPUS_PER_RACK                       # 864
+GPU_NODES = RACKS * NODES_PER_RACK                 # 108
 SVC_NODES = 16
 FS_NODES = 8
+TOTAL_NODES = GPU_NODES + SVC_NODES + FS_NODES     # 132
 CPU_CORES = SVC_NODES * 256           # 2 x Xeon 6 6980P per node, SMT off
 POWER_PEAK_MW = 1.9
 CAPEX = 85_000_000
