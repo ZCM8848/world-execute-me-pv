@@ -8,7 +8,7 @@ import math
 
 import numpy as np
 
-from worldcore import P, ROOT
+from worldcore import P, ROOT, env_sample
 from tui import COLS, ROWS
 from cluster import CLUSTER, RACKS, GPUS, GPU_NODES, TOTAL_NODES, CAPEX, TCO, SYNC, \
     TENSOR, SYNC_SPAN, PARAM_BYTES, SENSORS, ACOUSTIC, TELEMETRY
@@ -314,8 +314,8 @@ THINK_DT = 0.0176  # ~57 lines/s, matched to the EXECUTION log scroll rate
 def think_pane(ui, x0, y0, x1, y1, t, theme, t0, t1):
     pane(ui, x0, y0, x1, y1, "0:think :: world-core", active=True, tfg=P["bcyan"])
     xx, yy = x0 + 2, y0 + 2
-    i = int(max(0, min(len(art.ENV) - 1, t * 30)))
-    env = float(art.ENV[i])
+    i = int(max(0, min(len(art.ENV) - 1, t * art.REACT_FPS)))
+    env = env_sample(art.ENV, t, art.REACT_FPS)
     try:
         sp = float(np.asarray(art.SPEC[i]).mean())
     except Exception:

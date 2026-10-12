@@ -124,8 +124,12 @@ class Tui:
                      bg=bg, bold=True)
 
     # -- composite decoration ----------------------------------------------
-    def banner(self, x, y, text, rows=5, fg=None, bg=None, font_key="monob", thresh=0.44):
-        """Chunky block-letter banner (figlet-ish) built from full-block cells."""
+    def banner(self, x, y, text, rows=5, fg=None, bg=None, font_key="monob", thresh=0.44,
+               center=False):
+        """Chunky block-letter banner (figlet-ish) built from full-block cells.
+
+        With center=True, x is treated as the horizontal centre of the banner.
+        """
         fg = fg or P["bright"]
         target_h = rows * CH
         size = 220
@@ -140,6 +144,8 @@ class Tui:
         img = img.resize((nw, target_h), Image.NEAREST)
         arr = np.asarray(img)
         cols = int(math.ceil(nw / CW))
+        if center:
+            x = int(x) - cols // 2
         for r in range(rows):
             for c in range(cols):
                 blk = arr[r * CH:(r + 1) * CH, c * CW:(c + 1) * CW]

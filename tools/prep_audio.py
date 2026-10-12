@@ -16,7 +16,7 @@ import wave
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from worldcore import SR, FPS, ROOT, AUDIO
+from worldcore import SR, ENV_FPS, ROOT, AUDIO
 
 MP3 = os.path.join(ROOT, "world_execute_me.mp3")
 LRC = os.path.join(ROOT, "world.execute(me)-timeline.lrc")
@@ -132,15 +132,15 @@ def main():
     dur = len(mono) / sr
     print(f"audio {dur:.3f}s  sr={sr}  ch={audio.shape[1]}")
 
-    env = frame_env(mono, sr, FPS)
-    flux, spec = spectral_feats(mono, sr, FPS, 48)
+    env = frame_env(mono, sr, ENV_FPS)
+    flux, spec = spectral_feats(mono, sr, ENV_FPS, 48)
     onset_hi, _ = spectral_feats(mono, sr, HI_RATE, 24)
     bpm, conf = estimate_tempo(onset_hi, HI_RATE)
     print(f"tempo ~ {bpm:.2f} BPM (acf conf {conf:.3f})  frames={len(env)} spec={spec.shape}")
 
     np.savez_compressed(REACT, env=env, flux=flux, spec=spec,
                         onset_hi=onset_hi, hi_rate=HI_RATE,
-                        dur=dur, sr=sr, fps=FPS, bpm=bpm)
+                        dur=dur, sr=sr, fps=ENV_FPS, bpm=bpm)
     print("wrote", REACT)
 
     meta, lines = parse_lrc(LRC)

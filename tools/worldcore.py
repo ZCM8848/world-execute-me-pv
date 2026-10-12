@@ -16,7 +16,10 @@ if hasattr(sys.stdout, "reconfigure"):
 # canvas
 # ---------------------------------------------------------------------------
 W, H = 1920, 1080
-FPS = 30
+# output frame rate: override per-run with render.py --fps, or via PV_FPS.
+FPS = int(os.environ.get("PV_FPS", "30"))
+# reactive-signal sample rate of data/react.npz (env / spec), independent of FPS.
+ENV_FPS = 30
 SR = 44100
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -105,6 +108,24 @@ def seg(t, a, b):
 def ease_out(x):
     x = clamp(x)
     return 1 - (1 - x) ** 3
+
+
+def env_sample(env, t, rate):
+    """Linearly interpolate a per-frame reactive signal (env) at time t.
+
+    Keeps 60fps output smooth even though react.npz is sampled at ENV_FPS.
+    """
+    n = len(env)
+    if n == 0:
+        return 0.0
+    x = t * rate
+    if x <= 0.0:
+        return float(env[0])
+    if x >= n - 1:
+        return float(env[n - 1])
+    i = int(x)
+    f = x - i
+    return float(env[i] * (1.0 - f) + env[i + 1] * f)
 
 
 # ---------------------------------------------------------------------------

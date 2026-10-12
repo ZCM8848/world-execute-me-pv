@@ -21,9 +21,13 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from worldcore import W, H, FPS, ROOT, AUDIO, Post, clamp, seg, smoothstep, P, ROWS, COLS
+from worldcore import W, H, ROOT, AUDIO, Post, clamp, seg, smoothstep, P, ROWS, COLS, env_sample
 from tui import Tui, build_atlas, CHARSET
+import worldcore
 import scenes
+
+# output frame rate (reassigned from --fps in __main__)
+FPS = worldcore.FPS
 
 DATA = os.path.join(ROOT, "data")
 REACT = os.path.join(DATA, "react.npz")
@@ -41,6 +45,7 @@ def build_ctx():
     ctx.post = Post(seed=7)
     d = np.load(REACT)
     ctx.env = d["env"].astype(np.float32)
+    ctx.env_fps = float(d["fps"])
     ctx.dur = float(d["dur"])
     b = np.load(BEATS)
     ctx.beats = b["beats"]
@@ -49,8 +54,7 @@ def build_ctx():
 
 
 def env_at(ctx, t):
-    i = int(clamp(t * FPS, 0, len(ctx.env) - 1))
-    return float(ctx.env[i])
+    return env_sample(ctx.env, t, ctx.env_fps)
 
 
 def beat_pulse(ctx, t):
@@ -168,7 +172,7 @@ def encode(ctx, t0, t1, out_path, enc="auto"):
             proc.stdin.write(arr.tobytes())
         except BrokenPipeError:
             break
-        if (f - f0) % 30 == 0:
+        if (f - f0) % FPS == 0:
             done = f - f0 + 1
             el = time.time() - ts
             print(f"  frame {f}/{f1}  t={t:6.2f}s  {done / el:5.1f} fps  "
@@ -257,10 +261,19 @@ if __name__ == "__main__":
     ap.add_argument("--serial", action="store_true")
     ap.add_argument("--enc", choices=["auto", "nvenc", "x264"], default="auto")
     ap.add_argument("--gl", action="store_true", help="use the OpenGL GPU pipeline")
+    ap.add_argument("--fps", type=int, choices=[30, 60], default=None,
+                    help="output frame rate (default: PV_FPS or 30)")
     args = ap.parse_args()
+
+    if args.fps:
+        FPS = args.fps
+        worldcore.FPS = args.fps
+        os.environ["PV_FPS"] = str(args.fps)
 
     if args.gl:
         import glrender
+        if args.fps:
+            glrender.FPS = args.fps
         if args.preview:
             glrender.preview(args.preview)
         elif args.range:

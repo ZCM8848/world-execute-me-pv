@@ -12,7 +12,7 @@ import wave
 
 import numpy as np
 
-from worldcore import P, ROOT, FPS, SR, clamp, seg, smoothstep
+from worldcore import P, ROOT, SR, clamp, seg, smoothstep, env_sample
 from tui import COLS, ROWS
 from cluster import CLUSTER, GPUS, RACKS, NAMED_CAPACITY_MB, HIDE_GAP, HF_SHARDS
 import logs
@@ -24,6 +24,7 @@ DATA = os.path.join(ROOT, "data")
 _d = np.load(os.path.join(DATA, "react.npz"))
 ENV = _d["env"].astype(np.float32)
 SPEC = _d["spec"].astype(np.float32)
+REACT_FPS = float(_d["fps"])
 _b = np.load(os.path.join(DATA, "beats.npz"))
 BEATS = _b["beats"]
 
@@ -66,7 +67,7 @@ def lyric_events(a, b):
 
 
 def env_at(t):
-    return float(ENV[int(clamp(t * FPS, 0, len(ENV) - 1))])
+    return env_sample(ENV, t, REACT_FPS)
 
 
 def pulse(t):
@@ -487,7 +488,7 @@ def act_embody(ui, t, m):
         (86.0, "e.voss: my child is playing with the sensors", "say"),
     ]) + scenes.worldmon_lines(t, m))
     left = lambda ui, t, m: scenes.hw_pane(ui, 0, 1, 63, 26, t, m)
-    mid = mid_art_named("senses", A5)
+    mid = lambda ui, t, m: art.embody_show(ui, 64, 1, 127, 26, t, m)
     right = lambda ui, t, m: scenes.thermal_pane(ui, 128, 1, COLS - 1, 26, t, m)
     dash(ui, t, m, left, mid, right, j)
     return

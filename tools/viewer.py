@@ -27,7 +27,12 @@ def main():
     ap.add_argument("--scale", type=float, default=0.75)
     ap.add_argument("--shot", type=float, default=None,
                     help="render one frame to out/gl_<t>.png and exit")
+    ap.add_argument("--fps", type=int, choices=[30, 60], default=None)
     args = ap.parse_args()
+
+    global FPS
+    if args.fps:
+        FPS = args.fps
 
     import glrender
     if args.shot is not None:
@@ -100,7 +105,7 @@ def main():
         caption()
 
     caption()
-    pyglet.clock.schedule_interval(tick, 1.0 / 30.0)
+    pyglet.clock.schedule_interval(tick, 1.0 / FPS)
     pyglet.app.run()
 
 

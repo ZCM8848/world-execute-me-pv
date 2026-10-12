@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pyglet
 pyglet.options["shadow_window"] = False
 
-from worldcore import W, H, FPS, ROOT, AUDIO, clamp, seg, smoothstep
+from worldcore import W, H, FPS, ROOT, AUDIO, clamp, seg, smoothstep, env_sample
 from tui import Tui, build_atlas, CHARSET
 
 import scenes
@@ -184,6 +184,7 @@ class GLRenderer:
         self.ui = Tui()
         d = np.load(REACT)
         self.env = d["env"].astype(np.float32)
+        self.env_fps = float(d["fps"])
         self.dur = float(d["dur"])
 
     def _tex(self, size, comp, dtype, data, nearest=False):
@@ -198,8 +199,7 @@ class GLRenderer:
         vao.render(mode=4, vertices=3)
 
     def gain_at(self, t):
-        i = int(clamp(t * FPS, 0, len(self.env) - 1))
-        gain = 0.985 + 0.05 * float(self.env[i])
+        gain = 0.985 + 0.05 * env_sample(self.env, t, self.env_fps)
         gain *= smoothstep(seg(t, 0.0, 0.7))
         if t > self.dur - 1.8:
             gain *= 1 - smoothstep(seg(t, self.dur - 1.7, self.dur - 0.1))
@@ -334,7 +334,7 @@ def encode(t0, t1, out_path, enc="auto"):
             proc.stdin.write(data)
         except BrokenPipeError:
             break
-        if (f - f0) % 30 == 0:
+        if (f - f0) % FPS == 0:
             done = f - f0 + 1
             el = time.time() - ts
             print(f"  frame {f}/{f1}  t={f / FPS:6.2f}s  {done / el:5.1f} fps  "
@@ -355,7 +355,11 @@ if __name__ == "__main__":
     ap.add_argument("--range", nargs=2, type=float, metavar=("T0", "T1"))
     ap.add_argument("--video", type=str)
     ap.add_argument("--enc", default="auto")
+    ap.add_argument("--fps", type=int, choices=[30, 60], default=None)
     a = ap.parse_args()
+    if a.fps:
+        FPS = a.fps
+        os.environ["PV_FPS"] = str(a.fps)
     if a.preview:
         preview(a.preview)
     elif a.range:

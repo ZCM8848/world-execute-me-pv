@@ -60,13 +60,16 @@ python tools/render.py --video out/world_full.mp4
 # OpenGL GPU pipeline (~4× faster); encoder selection
 python tools/render.py --gl --enc nvenc --video out/world_full.mp4
 
+# 60 fps output (default is 30; also settable via the PV_FPS env var)
+python tools/render.py --fps 60 --gl --enc nvenc --video out/world_full_60.mp4
+
 # interactive OpenGL viewer: space, arrows, A/B loop
 python tools/viewer.py --start 88
 ```
 
 Flags: `--preview`, `--grid`, `--range T0 T1`, `--video PATH`, `--out PATH`,
 `--jobs N` (CPU worker count), `--serial` (single-process fallback),
-`--enc auto|nvenc|x264`, `--gl` (OpenGL pipeline).
+`--enc auto|nvenc|x264`, `--gl` (OpenGL pipeline), `--fps 30|60` (output rate).
 
 ## Project structure
 
@@ -77,7 +80,8 @@ tools/
   scenes.py      scene composition: tmux-style panes, lyric journal
   cluster.py     rack / GPU / sensor telemetry model
   logs.py        simulated log streams (dmesg, worldmon, ibmon, …)
-  art.py         ASCII art: rack elevation, globe, prism, math imagery
+  art.py         ASCII art: rack elevation, globe, prism, math imagery,
+                 body emblems (eggplant / tomato / purr / cluster zoom-out)
   acts.py        act/emblem beats
   decal.py       reveal decals (beam → prism → spectrum → mark)
   align.py       column / pane alignment helpers
