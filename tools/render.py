@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from worldcore import W, H, ROOT, AUDIO, Post, clamp, seg, smoothstep, P, ROWS, COLS, env_sample
 from tui import Tui, build_atlas, CHARSET
 import worldcore
+import camera
 import scenes
 
 # output frame rate (reassigned from --fps in __main__)
@@ -40,8 +41,13 @@ class Ctx:
 
 def build_ctx():
     ctx = Ctx()
+    ctx.camera = os.environ.get("PV_CAMERA") == "1"
     ctx.atlas = build_atlas("mono")
     ctx.atlas_b = build_atlas("monob")
+    if ctx.camera:
+        # 2x physical panel: same 192x54 grid, crisp 20x40 px cells
+        ctx.atlas2 = build_atlas("mono", size=40, cw=20, ch=40)
+        ctx.atlas2b = build_atlas("monob", size=40, cw=20, ch=40)
     ctx.post = Post(seed=7)
     d = np.load(REACT)
     ctx.env = d["env"].astype(np.float32)
@@ -69,14 +75,22 @@ def beat_pulse(ctx, t):
     return best
 
 
-def render_frame(t, ctx):
-    ui = Tui()
-    scenes.draw(ui, t)
-    frame = ui.render(ctx.atlas, ctx.atlas_b)
+def gain_at(t, ctx):
     gain = 0.985 + 0.05 * env_at(ctx, t)
     gain *= smoothstep(seg(t, 0.0, 0.7))
     if t > ctx.dur - 1.8:
         gain *= 1 - smoothstep(seg(t, ctx.dur - 1.7, ctx.dur - 0.1))
+    return gain
+
+
+def render_frame(t, ctx):
+    ui = Tui()
+    scenes.draw(ui, t)
+    gain = gain_at(t, ctx)
+    if ctx.camera:
+        panel = ui.render(ctx.atlas2, ctx.atlas2b)
+        return camera.apply(panel, t, gain)
+    frame = ui.render(ctx.atlas, ctx.atlas_b)
     return ctx.post.compose(frame, gain=gain, bloom=0.42)
 
 
@@ -115,7 +129,8 @@ def preview(ctx, times):
     for t in times:
         t0 = time.time()
         arr = render_frame(float(t), ctx)
-        path = os.path.join(ROOT, "out", f"frame_{float(t):06.2f}.png")
+        prefix = "cam" if ctx.camera else "frame"
+        path = os.path.join(ROOT, "out", f"{prefix}_{float(t):06.2f}.png")
         Image.fromarray(arr, "RGB").save(path)
         print(f"t={t:6.2f}s  {time.time() - t0:5.2f}s  {path}")
 
@@ -257,14 +272,25 @@ if __name__ == "__main__":
     ap.add_argument("--range", nargs=2, type=float, metavar=("T0", "T1"))
     ap.add_argument("--video", type=str)
     ap.add_argument("--out", type=str, default=None)
-    ap.add_argument("--jobs", type=int, default=max(4, min(16, (os.cpu_count() or 8) // 2)))
+    ap.add_argument("--jobs", type=int, default=None,
+                    help="CPU worker count (default: all logical cores - 2; "
+                         "camera path: min(32, cores/3), memory-bandwidth bound)")
     ap.add_argument("--serial", action="store_true")
     ap.add_argument("--enc", choices=["auto", "nvenc", "x264"], default="auto")
     ap.add_argument("--gl", action="store_true", help="use the OpenGL GPU pipeline")
+    ap.add_argument("--camera", action="store_true",
+                    help="handheld/macro screen-capture pass (CPU)")
     ap.add_argument("--fps", type=int, choices=[30, 60], default=None,
                     help="output frame rate (default: PV_FPS or 30)")
     args = ap.parse_args()
 
+    if args.camera and args.gl:
+        ap.error("--camera is CPU-only for now; drop --gl")
+    if args.camera:
+        os.environ["PV_CAMERA"] = "1"
+    cores = os.cpu_count() or 8
+    jobs = args.jobs or (max(8, min(32, cores // 3)) if args.camera
+                         else max(4, cores - 2))
     if args.fps:
         FPS = args.fps
         worldcore.FPS = args.fps
@@ -292,11 +318,11 @@ if __name__ == "__main__":
         preview(ctx, args.preview)
     elif args.range and not args.serial:
         out = args.out or os.path.join(ROOT, "out", "slice.mp4")
-        encode_parallel(args.range[0], args.range[1], out, args.jobs, args.enc)
+        encode_parallel(args.range[0], args.range[1], out, jobs, args.enc)
     elif args.video and not args.serial:
         # need duration: quick load
         d = np.load(REACT)
-        encode_parallel(0.0, float(d["dur"]), args.video, args.jobs, args.enc)
+        encode_parallel(0.0, float(d["dur"]), args.video, jobs, args.enc)
     else:
         ctx = build_ctx()
         print(f"loaded env={len(ctx.env)} beats={len(ctx.beats)} dur={ctx.dur:.1f}s")

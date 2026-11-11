@@ -190,11 +190,18 @@ class Tui:
 
     # -- rasterise ----------------------------------------------------------
     def render(self, atlas, atlas_bold):
+        """Rasterise the cell grid.
+
+        Cell size is inferred from the atlas, so the same Tui can be rendered
+        at 1x (1920x1080) or at higher panel densities (e.g. 2x / 3840x2160)
+        without changing the 192x54 character layout.
+        """
+        ch, cw = atlas.shape[1], atlas.shape[2]
         gid = self.ch
         cond = self.bo[..., None, None].astype(bool)
         m = np.where(cond, atlas_bold[gid], atlas[gid]).astype(np.float32) / 255.0
-        m = m.transpose(0, 2, 1, 3).reshape(ROWS * CH, COLS * CW, 1)
-        fg = np.repeat(np.repeat(self.fg, CH, axis=0), CW, axis=1).astype(np.float32)
-        bg = np.repeat(np.repeat(self.bg, CH, axis=0), CW, axis=1).astype(np.float32)
+        m = m.transpose(0, 2, 1, 3).reshape(ROWS * ch, COLS * cw, 1)
+        fg = np.repeat(np.repeat(self.fg, ch, axis=0), cw, axis=1).astype(np.float32)
+        bg = np.repeat(np.repeat(self.bg, ch, axis=0), cw, axis=1).astype(np.float32)
         out = bg * (1.0 - m) + fg * m
-        return out[:H, :W]
+        return out

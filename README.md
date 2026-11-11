@@ -65,11 +65,16 @@ python tools/render.py --fps 60 --gl --enc nvenc --video out/world_full_60.mp4
 
 # interactive OpenGL viewer: space, arrows, A/B loop
 python tools/viewer.py --start 88
+
+# handheld / macro screen-capture pass (CPU; shot cues in tools/camera.py)
+python tools/render.py --camera --range 0 14 --out out/cam_sample.mp4 --fps 60
 ```
 
 Flags: `--preview`, `--grid`, `--range T0 T1`, `--video PATH`, `--out PATH`,
-`--jobs N` (CPU worker count), `--serial` (single-process fallback),
-`--enc auto|nvenc|x264`, `--gl` (OpenGL pipeline), `--fps 30|60` (output rate).
+`--jobs N` (CPU worker count; default: all logical cores - 2, camera path:
+`min(32, cores/3)`), `--serial`
+(single-process fallback), `--enc auto|nvenc|x264`, `--gl` (OpenGL pipeline),
+`--camera` (2× panel + virtual camera), `--fps 30|60` (output rate).
 
 ## Project structure
 
@@ -87,6 +92,7 @@ tools/
   align.py       column / pane alignment helpers
   landmask.py    Natural Earth land mask rasteriser
   glrender.py    OpenGL GPU render path (moderngl + NVENC)
+  camera.py      2x panel + virtual handheld camera / macro shot cues (CPU)
   viewer.py      interactive OpenGL preview (play/scrub/A-B loop)
   prep_audio.py  Phase 1a: decode + reactive signal extraction
   beats.py       Phase 1c: tempo/phase comb search beat grid
